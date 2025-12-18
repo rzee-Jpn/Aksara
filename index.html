@@ -1,0 +1,74 @@
+import { useState, useEffect, useRef } from "react"; import { Sun, Moon, Search } from "lucide-react"; import { motion } from "framer-motion"; import gsap from "gsap";
+
+const TOOL_ITEMS = [ { title: "Aksara Jawa", description: "Konversi aksara Jawa ke Latin.", icon: "✨", url: "/aksara-jawa" }, { title: "Aksara Sunda", description: "Konversi aksara Sunda otomatis.", icon: "✨", url: "/aksara-sunda" }, { title: "Kalkulator Investasi", description: "Hitung profit & bunga.", icon: "💰", url: "/investasi" }, { title: "Roman ↔ Angka", description: "Konversi angka romawi.", icon: "🔢", url: "/romawi" }, ];
+
+const style = { gradient: "from-pink-500 via-purple-500 to-indigo-500", card: "bg-white/80 dark:bg-gray-900/60 backdrop-blur-xl", particleGradient: ["#ff6bcb", "#6366f1", "#4ade80", "#facc15"] };
+
+export default function ToolsHub() { const [dark, setDark] = useState(false); const [query, setQuery] = useState(""); const cardsRef = useRef([]); const bgRef = useRef(null);
+
+const filtered = TOOL_ITEMS.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()));
+
+useEffect(() => { // Card animation gsap.from(cardsRef.current, { opacity: 0, y: 40, duration: 0.6, stagger: 0.15, ease: "power2.out", });
+
+// Hero background particles animation
+const container = bgRef.current;
+const particles = [];
+for (let i = 0; i < 40; i++) {
+  const div = document.createElement('div');
+  const size = Math.random() * 12 + 6;
+  div.style.width = div.style.height = `${size}px`;
+  div.style.position = 'absolute';
+  div.style.left = `${Math.random() * 100}%`;
+  div.style.top = `${Math.random() * 100}%`;
+  div.style.borderRadius = '50%';
+  div.style.background = style.particleGradient[Math.floor(Math.random()*style.particleGradient.length)];
+  div.style.opacity = Math.random() * 0.5 + 0.2;
+  container.appendChild(div);
+  particles.push(div);
+
+  gsap.to(div, {
+    y: `+=${Math.random()*120 + 60}`,
+    x: `+=${Math.random()*60 - 30}`,
+    duration: Math.random()*6 + 4,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+  });
+}
+
+}, []);
+
+return ( <div className={${dark ? "dark bg-gray-950 text-white" : "bg-gray-100 text-gray-900"} min-h-screen transition-colors}>
+{/* NAVBAR */} <nav className="flex justify-between items-center px-6 py-4 sticky top-0 z-50 backdrop-blur bg-white/60 dark:bg-gray-900/60 border-b"> <h1 className="font-semibold text-xl">ToolsHub</h1> <button onClick={() => setDark(!dark)}>{dark ? <Sun /> : <Moon />}</button> </nav>
+
+{/* HERO */}
+  <section className="hero relative overflow-hidden py-20 px-6 text-center">
+    <div ref={bgRef} className="absolute inset-0 z-0"></div>
+    <motion.h2 className="relative z-10 text-4xl font-bold mb-4" initial={{ opacity:0, y:-20 }} animate={{ opacity:1, y:0 }}>
+      Kumpulan Tools Modern
+    </motion.h2>
+    <p className="relative z-10 opacity-80 max-w-md mx-auto">Simple, elegan, berguna untuk semua kalangan.</p>
+  </section>
+
+  {/* SEARCH */}
+  <div className="relative max-w-sm mx-auto mb-10">
+    <Search className="absolute left-3 top-1/2 -translate-y-1/2 opacity-50" />
+    <input placeholder="Cari tools..." className="pl-10 pr-3 py-2 rounded-xl w-full border dark:border-gray-700 bg-transparent" onChange={(e)=>setQuery(e.target.value)} />
+  </div>
+
+  {/* GRID */}
+  <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-6 max-w-6xl mx-auto pb-20">
+    {filtered.map((tool, idx) => (
+      <div key={tool.title} ref={el => (cardsRef.current[idx]=el)} className={`${style.card} rounded-2xl shadow-xl hover:shadow-2xl p-6 transition cursor-pointer hover:-translate-y-1` }>
+        <div className={`text-4xl p-4 rounded-xl bg-gradient-to-br ${style.gradient} text-white mb-3 inline-block`}>{tool.icon}</div>
+        <h3 className="font-semibold text-xl mb-1">{tool.title}</h3>
+        <p className="opacity-70 text-sm mb-3">{tool.description}</p>
+        <a href={tool.url} className="text-indigo-500 dark:text-indigo-300 font-medium">Buka Tools →</a>
+      </div>
+    ))}
+  </section>
+
+  <footer className="text-center py-6 opacity-60 text-sm">© 2025 ToolsHub — All rights reserved.</footer>
+</div>
+
+); }
