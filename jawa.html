@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generator Aksara Jawa</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Javanese&display=swap" rel="stylesheet">
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background: #fefefe;
+}
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+textarea, input {
+  width: 100%;
+  font-size: 16px;
+  padding: 10px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+#output {
+  font-family: 'Noto Serif Javanese', serif;
+  font-size: 28px;
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 8px;
+  min-height: 120px;
+  white-space: pre-wrap;
+}
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #45a049;
+}
+</style>
+</head>
+<body>
+<h1>Generator Aksara Jawa</h1>
+<p>Ketik teks Latin sesuai ejaan Jawa:</p>
+<textarea id="input" placeholder="Contoh: anak lanang maca serat jawa"></textarea>
+<button onclick="copyResult()">Salin Aksara</button>
+<div id="output"></div><script>
+// Data Aksara Jawa
+const aksara = {h:'ꦲ', n:'ꦤ', c:'ꦕ', r:'ꦫ', k:'ꦏ', d:'ꦢ', t:'ꦠ', s:'ꦱ', w:'ꦮ', l:'ꦭ', p:'ꦥ', j:'ꦗ', y:'ꦪ', m:'ꦩ', g:'ꦒ', b:'ꦧ', ng:'ꦔ', ny:'ꦚ', dh:'ꦝ', th:'ꦛ'};
+const sandhangan = {i:'ꦶ', u:'ꦸ', e:'ꦺ', o:'ꦺꦴ', ê:'ꦼ'};
+const pangkon = '꧀';
+
+function tokenize(text){
+  return text.toLowerCase().replace(/dh|th|ng|ny/g,m=>' '+m+' ').replace(/[a-zê]/g,m=>' '+m+' ').trim().split(/\s+/);
+}
+
+function convert(text){
+  const tokens = tokenize(text);
+  let out = '';
+  for(let i=0;i<tokens.length;i++){
+    const t = tokens[i];
+    const next = tokens[i+1];
+    if(aksara[t]){
+      if(sandhangan[next]){ out+=aksara[t]+sandhangan[next]; i++; }
+      else if(aksara[next]){ out+=aksara[t]+pangkon; }
+      else{ out+=aksara[t]; }
+    }
+  }
+  return out;
+}
+
+document.getElementById('input').addEventListener('input', e=>{
+  const output = document.getElementById('output');
+  while(output.firstChild) output.removeChild(output.firstChild);
+  output.appendChild(document.createTextNode(convert(e.target.value)));
+});
+
+function copyResult(){
+  const output = document.getElementById('output');
+  const range = document.createRange();
+  range.selectNode(output);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  document.execCommand('copy');
+  window.getSelection().removeAllRanges();
+  alert('Aksara Jawa disalin ke clipboard');
+}
+</script></body>
+</html>
