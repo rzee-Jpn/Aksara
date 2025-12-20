@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator Cicilan Bunga</title>
+<title>Kalkulator Cicilan Ultimate Portfolio</title>
 
 <!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -110,7 +110,7 @@ canvas {
 
   <button onclick="toggleMode()" class="toggle">🌙 / ☀️</button>
 
-  <h2>Kalkulator Cicilan By Anglumea</h2>
+  <h2>Kalkulator Cicilan Ultimate Portfolio</h2>
 
   <label>Nama User</label>
   <input type="text" id="namaUser" placeholder="Nama Anda">
@@ -192,17 +192,14 @@ function hitung(){
   const tipeBunga=document.getElementById("tipeBunga").value;
   const bungaTipe=document.getElementById("bungaTipe").value;
   const tenor=parseInt(document.getElementById("tenor").value);
-
   const admin=toNumber(document.getElementById("admin").value);
   const provisiPersen=parseFloat(document.getElementById("provisi").value)/100;
   const asuransi=toNumber(document.getElementById("asuransi").value);
-
   const pinjaman=harga-dp;
   let provisi=pinjaman*provisiPersen;
   let bungaBulanan=tipeBunga==="tahun"?bunga/12:bunga;
 
   const results={efektif:[], flat:[]};
-
   function hitungType(type){
     let sisa=pinjaman;
     const arr=[];
@@ -291,19 +288,17 @@ function hitung(){
     }
   });
 
-  // Tampilkan tombol download PDF setelah hasil dihitung
   document.getElementById("downloadBtn").style.display="block";
 }
 
-// Download PDF multi-halaman
+// Download PDF aman di Chrome
 function downloadPDF(){
   const namaUser=document.getElementById('namaUser').value||'User';
   const now=new Date();
 
-  // Wrapper PDF
   const pdfWrapper=document.createElement('div');
 
-  // Halaman 1 (portrait)
+  // Halaman 1: summary + table
   const header1=document.createElement('div');
   header1.innerHTML=`<h2 style="text-align:center;">Kalkulator Cicilan</h2>
   <p>Nama User: ${namaUser}</p>
@@ -311,37 +306,29 @@ function downloadPDF(){
   <hr>`;
   pdfWrapper.appendChild(header1);
 
-  // Clone container untuk summary + tabel
   const containerClone=document.querySelector('.container').cloneNode(true);
-  // Hapus tombol dan canvas agar bersih
   containerClone.querySelector('#hitungBtn')?.remove();
   containerClone.querySelector('#downloadBtn')?.remove();
   containerClone.querySelector('.toggle')?.remove();
-  const canvas=document.createElement('canvas'); // kosongkan canvas
-  containerClone.querySelector('#grafikCicilan')?.replaceWith(canvas);
+
+  // Hapus canvas asli
+  const canvasOrig=containerClone.querySelector('#grafikCicilan');
+  canvasOrig?.remove();
   pdfWrapper.appendChild(containerClone);
 
-  // Halaman 2 (landscape) untuk grafik
+  // Halaman 2: chart sebagai image
   const chartWrapper=document.createElement('div');
   chartWrapper.style.width='100%';
   chartWrapper.style.height='400px';
+  chartWrapper.style.pageBreakBefore='always';
   chartWrapper.innerHTML='<h3 style="text-align:center;">Grafik Cumulative Pokok + Bunga</h3>';
-  const chartClone=document.createElement('canvas');
-  chartClone.width=1200;
-  chartClone.height=600;
-  chartWrapper.appendChild(chartClone);
+  const chartImg=document.createElement('img');
+  chartImg.src=chart.toBase64Image();
+  chartImg.style.width='100%';
+  chartImg.style.height='auto';
+  chartWrapper.appendChild(chartImg);
   pdfWrapper.appendChild(chartWrapper);
 
-  // Copy data chart asli ke chart clone
-  const origData=chart.data;
-  const origOptions=chart.options;
-  new Chart(chartClone.getContext('2d'),{
-    type:'line',
-    data:origData,
-    options:Object.assign({}, origOptions, {responsive:false})
-  });
-
-  // Generate PDF multi-halaman
   html2pdf().from(pdfWrapper).set({
     margin:[10,10,10,10],
     filename:'Kalkulator_Cicilan_Full.pdf',
