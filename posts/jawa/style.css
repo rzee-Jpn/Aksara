@@ -10,20 +10,10 @@ body{
   margin: 28px auto;
   padding: 20px;
   background: linear-gradient(180deg,#fcfcfc,#f8f9fa);
-  color: #111;
 }
 
-h1{
-  text-align:center;
-  margin-bottom:4px;
-  font-size:1.6rem;
-}
-
-p{
-  text-align:center;
-  color:var(--muted);
-  margin:0 0 12px;
-}
+h1{ text-align:center; margin-bottom:4px; }
+p{ text-align:center; color:var(--muted); }
 
 textarea{
   width:100%;
@@ -32,29 +22,16 @@ textarea{
   font-size:16px;
   border-radius:10px;
   border:1px solid #ddd;
-  resize:vertical;
 }
 
 .controls{
   display:flex;
   align-items:center;
-  gap:12px;
   margin-top:10px;
+  gap:12px;
 }
 
-.controls label{
-  font-size:14px;
-  color:var(--muted);
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-.right{
-  margin-left:auto;
-  display:flex;
-  gap:10px;
-}
+.right{ margin-left:auto; display:flex; gap:10px; }
 
 button{
   padding:10px 14px;
@@ -64,19 +41,8 @@ button{
   font-weight:600;
 }
 
-#swapBtn{
-  background:#f1f3f5;
-  color:#333;
-}
-
-#swapBtn:hover{
-  background:#e9ecef;
-}
-
-#copyBtn{
-  background:var(--accent);
-  color:white;
-}
+#swapBtn{ background:#eee; }
+#copyBtn{ background:var(--accent); color:white; }
 
 #output{
   margin-top:20px;
@@ -84,9 +50,6 @@ button{
   padding:14px;
   border-radius:10px;
   border:1px solid #e6e6e6;
-  background:#fff;
   font-family:'Noto Serif Javanese', serif;
   font-size:36px;
-  white-space:pre-wrap;
-  line-height:1.4;
 }
