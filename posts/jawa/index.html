@@ -9,30 +9,30 @@
 </head>
 <body>
 
-  <h1>Generator Aksara Jawa</h1>
-  <p id="modeLabel">Latin → Aksara Jawa</p>
+<h1>Generator Aksara Jawa</h1>
+<p id="modeLabel">Latin → Aksara Jawa</p>
 
-  <textarea id="input" placeholder="Contoh: anak lanang mangan tahu"></textarea>
+<textarea id="input" placeholder="Contoh: anak lanang mangan tahu"></textarea>
 
-  <div class="controls">
-    <label>
-      <input type="checkbox" id="murdaToggle" checked>
-      Gunakan Murda (nama)
-    </label>
+<div class="controls">
+  <label>
+    <input type="checkbox" id="murdaToggle" checked>
+    Gunakan Murda
+  </label>
 
-    <div class="right">
-      <button id="swapBtn" title="Tukar arah">🔁 Swap</button>
-      <button id="copyBtn">Salin</button>
-    </div>
+  <div class="right">
+    <button id="swapBtn">🔁 Swap</button>
+    <button id="copyBtn">Salin</button>
   </div>
+</div>
 
-  <div id="output" aria-live="polite"></div>
+<div id="output"></div>
 
-  <!-- SCRIPT URUTAN WAJIB -->
-  <script src="sandhangan.js"></script>
-  <script src="angka.js"></script>
-  <script src="pasangan-engine.js"></script>
-  <script src="reverse-engine.js"></script>
-  <script src="app.js"></script>
+<script src="sandhangan.js"></script>
+<script src="angka.js"></script>
+<script src="pasangan-engine.js"></script>
+<script src="reverse-engine.js"></script>
+<script src="app.js"></script>
+
 </body>
 </html>
