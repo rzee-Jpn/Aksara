@@ -1,5 +1,6 @@
 /* =========================
    PBJ LANJUT – LATIN → AKSARA JAWA
+   FIX DIGRAF + VOKAL IMPLISIT
 ========================= */
 
 window.USE_MURDA = true;
@@ -18,7 +19,7 @@ function latinToJawaWord(raw){
   let prevConsonant = false;
   let atStart = true;
 
-  // Swara awal
+  // === SWARA AWAL ===
   if (SWARA[word[0]]) {
     out += SWARA[word[0]];
     i++;
@@ -27,19 +28,33 @@ function latinToJawaWord(raw){
 
   while (i < word.length) {
     const two = word.slice(i, i + 2);
+    const next = word[i + 2];
     const c = word[i];
     const v = word[i + 1];
 
-    // DIGRAF
+    /* =========================
+       DIGRAF (ng, ny, dh, th)
+    ========================= */
     if (AKSARA[two]) {
       out += prevConsonant ? PASANGAN[two] : AKSARA[two];
-      prevConsonant = true;
-      i += 2;
+
+      // vokal setelah digraf
+      if (isVowel(next)) {
+        if (next !== 'a') out += SANDHANGAN[next];
+        prevConsonant = false;
+        i += 3; // digraf + vokal
+      } else {
+        prevConsonant = true;
+        i += 2;
+      }
+
       atStart = false;
       continue;
     }
 
-    // KONSONAN
+    /* =========================
+       KONSONAN TUNGGAL
+    ========================= */
     if (AKSARA[c]) {
       if (prevConsonant) {
         out += PASANGAN[c];
@@ -47,7 +62,7 @@ function latinToJawaWord(raw){
         out += (USE_MURDA && atStart && MURDA[c]) ? MURDA[c] : AKSARA[c];
       }
 
-      // VOKAL
+      // vokal
       if (isVowel(v)) {
         if (v !== 'a') out += SANDHANGAN[v];
         prevConsonant = false;
@@ -61,14 +76,18 @@ function latinToJawaWord(raw){
       continue;
     }
 
-    // SPASI / TANDA BACA
+    /* =========================
+       SPASI / TANDA BACA
+    ========================= */
     out += c;
     prevConsonant = false;
+    atStart = true;
     i++;
-    atStart = false;
   }
 
-  // === AKHIR KATA (PBJ) ===
+  /* =========================
+     AKHIR KATA (PANYIGEG)
+  ========================= */
   if (word.endsWith('ng')) {
     out = out.replace(/꧀$/, '') + PANYIGEG.ng;
   } else if (word.endsWith('r')) {
