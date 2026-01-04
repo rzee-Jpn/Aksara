@@ -2,67 +2,66 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>High Accuracy Guitar Tuner</title>
+<title>Pro Guitar Tuner</title>
 <style>
   body {
-    background: #0f172a;
+    background: #020617;
     color: #e5e7eb;
     font-family: system-ui, sans-serif;
     text-align: center;
     padding: 40px;
   }
 
-  h1 { margin-bottom: 10px; }
+  h1 { margin-bottom: 5px; }
 
   .note {
     font-size: 72px;
-    font-weight: bold;
-    margin: 10px 0;
+    font-weight: 700;
   }
 
   .freq {
-    font-size: 20px;
     opacity: 0.8;
+    margin-top: -5px;
   }
 
   .meter {
-    width: 300px;
+    width: 320px;
     height: 8px;
-    background: #334155;
-    margin: 20px auto;
-    position: relative;
+    background: #1e293b;
+    margin: 25px auto;
     border-radius: 4px;
+    position: relative;
   }
 
   .needle {
     width: 4px;
-    height: 20px;
+    height: 26px;
     background: #22c55e;
     position: absolute;
-    top: -6px;
+    top: -9px;
     left: 50%;
     transform-origin: bottom;
   }
 
   .status {
-    margin-top: 10px;
     font-size: 18px;
+    margin-top: 10px;
   }
 
   button {
-    margin-top: 20px;
-    padding: 12px 20px;
+    margin-top: 25px;
+    padding: 12px 24px;
     font-size: 16px;
-    border: none;
-    border-radius: 8px;
     background: #22c55e;
+    border: none;
+    border-radius: 10px;
     cursor: pointer;
   }
 </style>
 </head>
 
 <body>
-<h1>🎸 Guitar Tuner</h1>
+<h1>🎸 Pro Guitar Tuner</h1>
 <div class="note" id="note">--</div>
 <div class="freq" id="freq">0.00 Hz</div>
 
@@ -74,10 +73,12 @@
 <button onclick="start()">Start</button>
 
 <script>
-let audioContext, analyser, buffer;
+let ctx, analyser, buffer;
 let freqHistory = [];
+let lockedString = null;
+let lastPluck = 0;
 
-const strings = [
+const STRINGS = [
   { note: "E2", freq: 82.41 },
   { note: "A2", freq: 110.00 },
   { note: "D3", freq: 146.83 },
@@ -87,53 +88,73 @@ const strings = [
 ];
 
 async function start() {
-  audioContext = new AudioContext();
+  ctx = new AudioContext();
+
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const source = audioContext.createMediaStreamSource(stream);
+  const source = ctx.createMediaStreamSource(stream);
 
-  const filter = audioContext.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = 1000;
+  // Band-pass khusus gitar
+  const bandpass = ctx.createBiquadFilter();
+  bandpass.type = "bandpass";
+  bandpass.frequency.value = 180;
+  bandpass.Q.value = 0.8;
 
-  analyser = audioContext.createAnalyser();
-  analyser.fftSize = 4096;
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 8192;
 
-  source.connect(filter);
-  filter.connect(analyser);
+  source.connect(bandpass);
+  bandpass.connect(analyser);
 
   buffer = new Float32Array(analyser.fftSize);
+  lastPluck = performance.now();
+
   detect();
 }
 
 function detect() {
   analyser.getFloatTimeDomainData(buffer);
-  let freq = autoCorrelate(buffer, audioContext.sampleRate);
 
-  if (freq !== -1) {
-    freqHistory.push(freq);
-    if (freqHistory.length > 5) freqHistory.shift();
-    freq = freqHistory.slice().sort()[2]; // median
-
-    const string = closestString(freq);
-    const cents = centsOff(freq, string.freq);
-
-    document.getElementById("note").textContent = string.note;
-    document.getElementById("freq").textContent = freq.toFixed(2) + " Hz";
-
-    updateUI(cents);
+  // Ignore attack (200 ms)
+  if (performance.now() - lastPluck < 200) {
+    requestAnimationFrame(detect);
+    return;
   }
 
+  let freq = autoCorrelate(buffer, ctx.sampleRate);
+  if (freq === -1) {
+    requestAnimationFrame(detect);
+    return;
+  }
+
+  // Weighted smoothing (low freq optimized)
+  freqHistory.push(freq);
+  if (freqHistory.length > 8) freqHistory.shift();
+
+  let weighted = 0, total = 0;
+  freqHistory.forEach((f, i) => {
+    const w = i + 1;
+    weighted += f * w;
+    total += w;
+  });
+  freq = weighted / total;
+
+  let target = lockString(freq);
+  let cents = centsOff(freq, target.freq);
+
+  updateUI(target.note, freq, cents);
   requestAnimationFrame(detect);
 }
 
 function autoCorrelate(buf, sampleRate) {
   let size = buf.length;
   let rms = 0;
+
   for (let i = 0; i < size; i++) rms += buf[i] ** 2;
   rms = Math.sqrt(rms / size);
   if (rms < 0.01) return -1;
 
-  let c = new Array(size).fill(0);
+  let c = new Float32Array(size);
+
   for (let i = 0; i < size; i++)
     for (let j = 0; j < size - i; j++)
       c[i] += buf[j] * buf[j + i];
@@ -149,39 +170,50 @@ function autoCorrelate(buf, sampleRate) {
     }
   }
 
-  // parabolic interpolation
+  if (max < 0.15) return -1; // confidence threshold
+
+  // Parabolic interpolation
   let x1 = c[pos - 1], x2 = c[pos], x3 = c[pos + 1];
   let shift = (x3 - x1) / (2 * (2 * x2 - x1 - x3));
 
   return sampleRate / (pos + shift);
 }
 
-function closestString(freq) {
-  return strings.reduce((a, b) =>
+function lockString(freq) {
+  if (lockedString && Math.abs(freq - lockedString.freq) < 4) {
+    return lockedString;
+  }
+
+  lockedString = STRINGS.reduce((a, b) =>
     Math.abs(freq - a.freq) < Math.abs(freq - b.freq) ? a : b
   );
+
+  return lockedString;
 }
 
 function centsOff(freq, ref) {
   return 1200 * Math.log2(freq / ref);
 }
 
-function updateUI(cents) {
+function updateUI(note, freq, cents) {
+  document.getElementById("note").textContent = note;
+  document.getElementById("freq").textContent = freq.toFixed(2) + " Hz";
+
   const needle = document.getElementById("needle");
   const status = document.getElementById("status");
 
   let clamped = Math.max(-50, Math.min(50, cents));
   needle.style.transform = `translateX(${clamped * 2}px)`;
 
-  if (Math.abs(cents) < 1) {
-    status.textContent = "✔ Pas";
+  if (Math.abs(cents) < 0.5) {
     needle.style.background = "#22c55e";
+    status.textContent = "✔ PAS (±0.5 cent)";
   } else if (cents < 0) {
+    needle.style.background = "#facc15";
     status.textContent = "⬇ Terlalu Rendah";
-    needle.style.background = "#facc15";
   } else {
-    status.textContent = "⬆ Terlalu Tinggi";
     needle.style.background = "#facc15";
+    status.textContent = "⬆ Terlalu Tinggi";
   }
 }
 </script>
