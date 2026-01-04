@@ -33,42 +33,13 @@
 <script src="pasangan-engine.js"></script>
 <script src="reverse-engine.js"></script>
 <script src="app.js"></script>
-<script>
-function toggleFootbar(){
-  document.getElementById('footbar')
-    .classList.toggle('expanded');
-}
-
-function shareTool(){
-  if(navigator.share){
-    navigator.share({
-      title:'Generator Aksara Jawa',
-      text:'Coba Generator Aksara Jawa',
-      url:location.href
-    });
-  } else {
-    alert(location.href);
-  }
-}
-
-function openAnotherTools(){
-  window.open('https://anglumea.github.io/tools','_blank');
-}
-function openSocial(){
-  window.open('https://instagram.com/anglumea','_blank');
-}
-function openDonate(){
-  window.open('https://trakteer.id/anglumea','_blank');
-}
-</script>
-
-<div id="footbar" class="collapsed">
-  <div id="footbar-handle" onclick="toggleFootbar()">
-    <span class="handle"></span>
-    <span class="brand">Anglumea</span>
+<div id="bottomDrawer" class="closed">
+  <div id="drawerHandle" onclick="toggleDrawer()">
+    <div class="drawer-bar"></div>
+    <div class="drawer-title">Anglumea</div>
   </div>
 
-  <div class="footbar-content">
+  <div class="drawer-content">
     <button onclick="shareTool()">Share Tools</button>
     <button onclick="openAnotherTools()">Another Tools</button>
     <button onclick="openSocial()">Social Media</button>
