@@ -1,83 +1,31 @@
-const aksara = {
-  h:'ꦲ', n:'ꦤ', c:'ꦕ', r:'ꦫ', k:'ꦏ', d:'ꦢ', t:'ꦠ', s:'ꦱ',
-  w:'ꦮ', l:'ꦭ', p:'ꦥ', j:'ꦗ', y:'ꦪ', m:'ꦩ', g:'ꦒ',
-  b:'ꦧ', ng:'ꦔ', ny:'ꦚ', dh:'ꦝ', th:'ꦛ'
-};
+const input = document.getElementById('input');
+const output = document.getElementById('output');
+const copyBtn = document.getElementById('copyBtn');
+const murdaToggle = document.getElementById('murdaToggle');
 
-const sandhangan = {
-  i:'ꦶ', u:'ꦸ', e:'ꦺ', o:'ꦺꦴ', ê:'ꦼ'
-};
-
-const pangkon = '꧀';
-const cecak = 'ꦁ';
-
-function transliterateWord(word) {
-  let out = '';
-  let i = 0;
-
-  while (i < word.length) {
-
-    // digraf (ng, ny, dh, th)
-    let dg = word.slice(i, i + 2);
-    if (aksara[dg]) {
-      let next = word[i + 2];
-      out += aksara[dg];
-
-      if (sandhangan[next]) {
-        out += sandhangan[next];
-        i += 3;
-      } else if (!next || !'aiueoê'.includes(next)) {
-        out += pangkon;
-        i += 2;
-      } else {
-        i += 2;
-      }
-      continue;
-    }
-
-    let c = word[i];
-    let v = word[i + 1];
-
-    if (aksara[c]) {
-      out += aksara[c];
-
-      if (sandhangan[v]) {
-        out += sandhangan[v];
-        i += 2;
-      } else if (v === 'a') {
-        i += 2;
-      } else if (!v || !'aiueoê'.includes(v)) {
-        out += pangkon;
-        i += 1;
-      } else {
-        i += 1;
-      }
-    } else {
-      i++;
-    }
-  }
-
-  // akhiran -ng → cecak
-  if (word.endsWith('ng')) {
-    out = out.slice(0, -1) + cecak;
-  }
-
-  return out;
+function render(){
+  output.textContent = latinToJawa(input.value || '');
 }
 
-function convert(text) {
-  return text
-    .toLowerCase()
-    .split(/\s+/)
-    .map(transliterateWord)
-    .join(' ');
-}
-
-document.getElementById('input').addEventListener('input', e => {
-  document.getElementById('output').textContent = convert(e.target.value);
+// update global flag saat toggle berubah
+murdaToggle.addEventListener('change', (e) => {
+  USE_MURDA = !!e.target.checked;
+  render();
 });
 
-document.getElementById('copyBtn').addEventListener('click', () => {
-  navigator.clipboard.writeText(document.getElementById('output').textContent);
-  alert('Aksara Jawa berhasil disalin!');
+input.addEventListener('input', render);
+
+// initial render
+render();
+
+copyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(output.textContent || '');
+    // notifikasi sederhana
+    const prev = copyBtn.textContent;
+    copyBtn.textContent = 'Tersalin ✓';
+    setTimeout(()=> copyBtn.textContent = prev, 1200);
+  } catch (err) {
+    alert('Gagal menyalin: ' + err);
+  }
 });
