@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>High Accuracy Guitar Tuner</title>
+<style>
+  body {
+    background: #0f172a;
+    color: #e5e7eb;
+    font-family: system-ui, sans-serif;
+    text-align: center;
+    padding: 40px;
+  }
+
+  h1 { margin-bottom: 10px; }
+
+  .note {
+    font-size: 72px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+
+  .freq {
+    font-size: 20px;
+    opacity: 0.8;
+  }
+
+  .meter {
+    width: 300px;
+    height: 8px;
+    background: #334155;
+    margin: 20px auto;
+    position: relative;
+    border-radius: 4px;
+  }
+
+  .needle {
+    width: 4px;
+    height: 20px;
+    background: #22c55e;
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform-origin: bottom;
+  }
+
+  .status {
+    margin-top: 10px;
+    font-size: 18px;
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    background: #22c55e;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+<h1>🎸 Guitar Tuner</h1>
+<div class="note" id="note">--</div>
+<div class="freq" id="freq">0.00 Hz</div>
+
+<div class="meter">
+  <div class="needle" id="needle"></div>
+</div>
+
+<div class="status" id="status">Tekan Start</div>
+<button onclick="start()">Start</button>
+
+<script>
+let audioContext, analyser, buffer;
+let freqHistory = [];
+
+const strings = [
+  { note: "E2", freq: 82.41 },
+  { note: "A2", freq: 110.00 },
+  { note: "D3", freq: 146.83 },
+  { note: "G3", freq: 196.00 },
+  { note: "B3", freq: 246.94 },
+  { note: "E4", freq: 329.63 }
+];
+
+async function start() {
+  audioContext = new AudioContext();
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const source = audioContext.createMediaStreamSource(stream);
+
+  const filter = audioContext.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 1000;
+
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 4096;
+
+  source.connect(filter);
+  filter.connect(analyser);
+
+  buffer = new Float32Array(analyser.fftSize);
+  detect();
+}
+
+function detect() {
+  analyser.getFloatTimeDomainData(buffer);
+  let freq = autoCorrelate(buffer, audioContext.sampleRate);
+
+  if (freq !== -1) {
+    freqHistory.push(freq);
+    if (freqHistory.length > 5) freqHistory.shift();
+    freq = freqHistory.slice().sort()[2]; // median
+
+    const string = closestString(freq);
+    const cents = centsOff(freq, string.freq);
+
+    document.getElementById("note").textContent = string.note;
+    document.getElementById("freq").textContent = freq.toFixed(2) + " Hz";
+
+    updateUI(cents);
+  }
+
+  requestAnimationFrame(detect);
+}
+
+function autoCorrelate(buf, sampleRate) {
+  let size = buf.length;
+  let rms = 0;
+  for (let i = 0; i < size; i++) rms += buf[i] ** 2;
+  rms = Math.sqrt(rms / size);
+  if (rms < 0.01) return -1;
+
+  let c = new Array(size).fill(0);
+  for (let i = 0; i < size; i++)
+    for (let j = 0; j < size - i; j++)
+      c[i] += buf[j] * buf[j + i];
+
+  let d = 0;
+  while (c[d] > c[d + 1]) d++;
+
+  let max = -1, pos = -1;
+  for (let i = d; i < size; i++) {
+    if (c[i] > max) {
+      max = c[i];
+      pos = i;
+    }
+  }
+
+  // parabolic interpolation
+  let x1 = c[pos - 1], x2 = c[pos], x3 = c[pos + 1];
+  let shift = (x3 - x1) / (2 * (2 * x2 - x1 - x3));
+
+  return sampleRate / (pos + shift);
+}
+
+function closestString(freq) {
+  return strings.reduce((a, b) =>
+    Math.abs(freq - a.freq) < Math.abs(freq - b.freq) ? a : b
+  );
+}
+
+function centsOff(freq, ref) {
+  return 1200 * Math.log2(freq / ref);
+}
+
+function updateUI(cents) {
+  const needle = document.getElementById("needle");
+  const status = document.getElementById("status");
+
+  let clamped = Math.max(-50, Math.min(50, cents));
+  needle.style.transform = `translateX(${clamped * 2}px)`;
+
+  if (Math.abs(cents) < 1) {
+    status.textContent = "✔ Pas";
+    needle.style.background = "#22c55e";
+  } else if (cents < 0) {
+    status.textContent = "⬇ Terlalu Rendah";
+    needle.style.background = "#facc15";
+  } else {
+    status.textContent = "⬆ Terlalu Tinggi";
+    needle.style.background = "#facc15";
+  }
+}
+</script>
+</body>
+</html>
