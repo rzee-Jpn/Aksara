@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Generator Aksara Jawa</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Javanese&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -13,11 +13,17 @@
   <p>Ketik teks Latin (ejaan Jawa):</p>
 
   <textarea id="input" placeholder="Contoh: anak lanang mangan tahu"></textarea>
+  <div class="controls">
+    <label><input type="checkbox" id="murdaToggle" checked> Gunakan Murda (nama)</label>
+    <button id="copyBtn">Salin Aksara</button>
+  </div>
 
-  <button id="copyBtn">Salin Aksara</button>
+  <div id="output" aria-live="polite"></div>
 
-  <div id="output"></div>
-
-  <script src="script.js"></script>
+  <!-- URUTAN PENTING: data dulu, engine, UI -->
+  <script src="sandhangan.js"></script>
+  <script src="angka.js"></script>
+  <script src="pasangan-engine.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
