@@ -2,54 +2,52 @@ const input = document.getElementById('input');
 const output = document.getElementById('output');
 const copyBtn = document.getElementById('copyBtn');
 const murdaToggle = document.getElementById('murdaToggle');
-const reverseToggle = document.getElementById('reverseToggle');
+const swapBtn = document.getElementById('swapBtn');
+const modeLabel = document.getElementById('modeLabel');
 
-/* =========================
-   RENDER ENGINE
-========================= */
+// false = Latin → Jawa
+// true  = Jawa → Latin
+let isReverse = false;
+
 function render(){
   const text = input.value || '';
 
-  if (reverseToggle && reverseToggle.checked) {
-    // AKSARA → LATIN
+  if (isReverse) {
     output.textContent = jawaToLatin(text);
+    modeLabel.textContent = 'Aksara Jawa → Latin';
+    murdaToggle.disabled = true;
   } else {
-    // LATIN → AKSARA
     output.textContent = latinToJawa(text);
+    modeLabel.textContent = 'Latin → Aksara Jawa';
+    murdaToggle.disabled = false;
   }
 }
 
-/* =========================
-   EVENT LISTENERS
-========================= */
-
-// input utama
+// input
 input.addEventListener('input', render);
 
-// toggle murda (hanya berpengaruh ke Latin → Jawa)
-if (murdaToggle) {
-  murdaToggle.addEventListener('change', (e) => {
-    USE_MURDA = !!e.target.checked;
-    render();
-  });
-}
-
-// toggle reverse
-if (reverseToggle) {
-  reverseToggle.addEventListener('change', render);
-}
-
-// copy hasil
-copyBtn.addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(output.textContent || '');
-    const prev = copyBtn.textContent;
-    copyBtn.textContent = 'Tersalin ✓';
-    setTimeout(() => copyBtn.textContent = prev, 1200);
-  } catch (err) {
-    alert('Gagal menyalin: ' + err);
-  }
+// murda
+murdaToggle.addEventListener('change', e => {
+  USE_MURDA = !!e.target.checked;
+  render();
 });
 
-// render awal
+// SWAP
+swapBtn.addEventListener('click', () => {
+  const temp = input.value;
+  input.value = output.textContent || '';
+  output.textContent = '';
+  isReverse = !isReverse;
+  render();
+});
+
+// copy
+copyBtn.addEventListener('click', async () => {
+  await navigator.clipboard.writeText(output.textContent || '');
+  const prev = copyBtn.textContent;
+  copyBtn.textContent = 'Tersalin ✓';
+  setTimeout(() => copyBtn.textContent = prev, 1200);
+});
+
+// init
 render();
