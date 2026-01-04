@@ -57,3 +57,33 @@ copyBtn.addEventListener('click', async ()=>{
 // INIT
 setModeUI();
 render();
+
+
+
+function toggleDrawer(){
+  document
+    .getElementById('bottomDrawer')
+    .classList.toggle('open');
+}
+
+function shareTool(){
+  if(navigator.share){
+    navigator.share({
+      title:'Generator Aksara Jawa',
+      text:'Coba Generator Aksara Jawa',
+      url:location.href
+    });
+  } else {
+    alert(location.href);
+  }
+}
+
+function openAnotherTools(){
+  window.open('https://anglumea.github.io/tools','_blank');
+}
+function openSocial(){
+  window.open('https://instagram.com/anglumea','_blank');
+}
+function openDonate(){
+  window.open('https://trakteer.id/anglumea','_blank');
+}
