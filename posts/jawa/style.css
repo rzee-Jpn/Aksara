@@ -53,3 +53,46 @@ button{
   font-family:'Noto Serif Javanese', serif;
   font-size:36px;
 }
+
+footer#footerBar{
+  margin-top:60px;
+  padding:18px 16px;
+  border-top:1px solid #e5e5e5;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:#fff;
+  border-radius:16px;
+}
+
+footer .brand{
+  font-size:18px;
+  font-weight:700;
+  background:linear-gradient(135deg,#2b8a3e,#40c057);
+  color:white;
+  padding:10px 18px;
+  border-radius:999px;
+}
+
+.footer-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.footer-actions button{
+  background:#f1f3f5;
+  color:#333;
+  padding:10px 14px;
+  border-radius:999px;
+  font-weight:600;
+  transition:.2s ease;
+}
+
+.footer-actions button:hover{
+  background:#2b8a3e;
+  color:white;
+  transform:translateY(-2px);
+}
