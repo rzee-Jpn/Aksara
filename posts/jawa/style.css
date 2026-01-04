@@ -1,51 +1,82 @@
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  max-width: 800px;
-  margin: auto;
+:root{
+  --max-width: 900px;
+  --gap: 16px;
+  --bg: #ffffff;
+  --muted: #666;
+  --accent: #2b8a3e;
+}
+
+body{
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  max-width: var(--max-width);
+  margin: 28px auto;
   padding: 20px;
-  background: #fdfdfd;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-p {
-  text-align: center;
-}
-
-textarea {
-  width: 100%;
-  min-height: 120px;
-  font-size: 16px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  background: linear-gradient(180deg,#fcfcfc,#f8f9fa);
+  color: #111;
   box-sizing: border-box;
 }
 
-button {
-  margin-top: 10px;
-  padding: 10px 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+h1{
+  text-align:center;
+  margin-bottom:6px;
+  font-size:1.6rem;
 }
 
-button:hover {
-  background-color: #45a049;
+p{
+  text-align:center;
+  color:var(--muted);
+  margin-top:0;
+  margin-bottom:12px;
 }
 
-#output {
-  margin-top: 20px;
-  min-height: 120px;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+textarea{
+  width:100%;
+  min-height:120px;
+  padding:12px;
+  font-size:16px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  box-sizing:border-box;
+  resize:vertical;
+}
+
+.controls{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-top:10px;
+}
+
+.controls label{
+  font-size:14px;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+button{
+  margin-left:auto;
+  padding:10px 14px;
+  background:var(--accent);
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+button:hover{ filter:brightness(.95); }
+
+#output{
+  margin-top:20px;
+  min-height:120px;
+  padding:14px;
+  border-radius:10px;
+  border:1px solid #e6e6e6;
+  background: #fff;
   font-family: 'Noto Serif Javanese', serif;
-  font-size: 28px;
-  white-space: pre-wrap;
+  font-size:36px;
+  white-space:pre-wrap;
+  line-height:1.4;
 }
