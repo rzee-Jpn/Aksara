@@ -34,45 +34,47 @@
 <script src="reverse-engine.js"></script>
 <script src="app.js"></script>
 <script>
-function scrollToTop(){
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function toggleFootbar(){
+  document.getElementById('footbar')
+    .classList.toggle('expanded');
 }
 
 function shareTool(){
   if(navigator.share){
     navigator.share({
-      title: 'Generator Aksara Jawa',
-      text: 'Coba Generator Aksara Jawa ini!',
-      url: location.href
+      title:'Generator Aksara Jawa',
+      text:'Coba Generator Aksara Jawa',
+      url:location.href
     });
   } else {
-    alert('Link: ' + location.href);
+    alert(location.href);
   }
 }
 
 function openAnotherTools(){
-  window.open('https://anglumea.github.io/tools', '_blank');
+  window.open('https://anglumea.github.io/tools','_blank');
 }
-
 function openSocial(){
-  window.open('https://instagram.com/anglumea', '_blank');
+  window.open('https://instagram.com/anglumea','_blank');
 }
-
 function openDonate(){
-  window.open('https://trakteer.id/anglumea', '_blank');
+  window.open('https://trakteer.id/anglumea','_blank');
 }
 </script>
 
-<footer id="footerBar">
-  <button class="brand" onclick="scrollToTop()">Anglumea</button>
+<div id="footbar" class="collapsed">
+  <div id="footbar-handle" onclick="toggleFootbar()">
+    <span class="handle"></span>
+    <span class="brand">Anglumea</span>
+  </div>
 
-  <div class="footer-actions">
+  <div class="footbar-content">
     <button onclick="shareTool()">Share Tools</button>
     <button onclick="openAnotherTools()">Another Tools</button>
     <button onclick="openSocial()">Social Media</button>
     <button onclick="openDonate()">Donate</button>
   </div>
-</footer>
+</div>
 
 </body>
 </html>
