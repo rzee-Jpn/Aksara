@@ -1,53 +1,41 @@
 const input = document.getElementById('input');
 const output = document.getElementById('output');
 const copyBtn = document.getElementById('copyBtn');
-const murdaToggle = document.getElementById('murdaToggle');
 const swapBtn = document.getElementById('swapBtn');
+const murdaToggle = document.getElementById('murdaToggle');
 const modeLabel = document.getElementById('modeLabel');
 
-// false = Latin → Jawa
-// true  = Jawa → Latin
-let isReverse = false;
+let reverse = false;
 
 function render(){
-  const text = input.value || '';
-
-  if (isReverse) {
-    output.textContent = jawaToLatin(text);
+  if(reverse){
+    output.textContent = jawaToLatin(input.value);
     modeLabel.textContent = 'Aksara Jawa → Latin';
     murdaToggle.disabled = true;
   } else {
-    output.textContent = latinToJawa(text);
+    output.textContent = latinToJawa(input.value);
     modeLabel.textContent = 'Latin → Aksara Jawa';
     murdaToggle.disabled = false;
   }
 }
 
-// input
 input.addEventListener('input', render);
 
-// murda
-murdaToggle.addEventListener('change', e => {
-  USE_MURDA = !!e.target.checked;
+murdaToggle.addEventListener('change', e=>{
+  USE_MURDA = e.target.checked;
   render();
 });
 
-// SWAP
-swapBtn.addEventListener('click', () => {
-  const temp = input.value;
-  input.value = output.textContent || '';
-  output.textContent = '';
-  isReverse = !isReverse;
+swapBtn.addEventListener('click', ()=>{
+  reverse = !reverse;
+  input.value = output.textContent;
   render();
 });
 
-// copy
-copyBtn.addEventListener('click', async () => {
-  await navigator.clipboard.writeText(output.textContent || '');
-  const prev = copyBtn.textContent;
-  copyBtn.textContent = 'Tersalin ✓';
-  setTimeout(() => copyBtn.textContent = prev, 1200);
+copyBtn.addEventListener('click', async ()=>{
+  await navigator.clipboard.writeText(output.textContent);
+  copyBtn.textContent='Tersalin ✓';
+  setTimeout(()=>copyBtn.textContent='Salin',1200);
 });
 
-// init
 render();
