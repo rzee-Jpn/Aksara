@@ -1,15 +1,10 @@
 /* =========================
    AKSARA JAWA → LATIN
-   (reverse transliteration)
 ========================= */
 
-// balik mapping
+// balik mapping (data SUDAH ada dari file sebelumnya)
 const REVERSE_AKSARA = Object.fromEntries(
   Object.entries(AKSARA).map(([k, v]) => [v, k])
-);
-
-const REVERSE_PASANGAN = Object.fromEntries(
-  Object.entries(PASANGAN).map(([k, v]) => [v, k])
 );
 
 const REVERSE_SANDHANGAN = Object.fromEntries(
@@ -29,8 +24,6 @@ const REVERSE_SWARA = Object.fromEntries(
 const REVERSE_ANGKA = Object.fromEntries(
   Object.entries(ANGKA_JAWA).map(([k, v]) => [v, k])
 );
-
-const PADA_PANGKAT = '꧇';
 
 /* =========================
    FUNGSI INTI
@@ -61,26 +54,26 @@ function jawaToLatin(text){
         i++;
       }
       out += num;
-      i++; // lewati pada pangkat penutup
+      i++;
       continue;
     }
 
-    // swara (vokal mandiri)
+    // swara
     if (REVERSE_SWARA[ch]) {
       out += REVERSE_SWARA[ch];
       i++;
       continue;
     }
 
-    // panyigeg wanda
+    // panyigeg
     if (REVERSE_PANYIGEG[ch]) {
       out += REVERSE_PANYIGEG[ch];
       i++;
       continue;
     }
 
-    // pasangan (format: ꧀ + aksara)
-    if (ch === '꧀' && REVERSE_AKSARA[text[i+1]]) {
+    // pasangan (pangkon + aksara)
+    if (ch === PANGKON && REVERSE_AKSARA[text[i+1]]) {
       out += REVERSE_AKSARA[text[i+1]];
       i += 2;
       continue;
@@ -88,29 +81,19 @@ function jawaToLatin(text){
 
     // aksara legena
     if (REVERSE_AKSARA[ch]) {
-      let latin = REVERSE_AKSARA[ch];
-      let next = text[i+1];
+      const latin = REVERSE_AKSARA[ch];
+      const next = text[i+1];
 
-      // sandhangan vokal
       if (REVERSE_SANDHANGAN[next]) {
         out += latin + REVERSE_SANDHANGAN[next];
         i += 2;
       } else {
-        // vokal implisit "a"
         out += latin + 'a';
-        i += 1;
+        i++;
       }
       continue;
     }
 
-    // sandhangan berdiri sendiri (fallback)
-    if (REVERSE_SANDHANGAN[ch]) {
-      out += REVERSE_SANDHANGAN[ch];
-      i++;
-      continue;
-    }
-
-    // karakter lain (abaikan)
     i++;
   }
 
