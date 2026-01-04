@@ -2,101 +2,156 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pro Guitar Tuner</title>
+
 <style>
-  body {
-    background: #020617;
-    color: #e5e7eb;
-    font-family: system-ui, sans-serif;
-    text-align: center;
-    padding: 40px;
-  }
+body {
+  background: #020617;
+  color: #e5e7eb;
+  font-family: system-ui, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
 
-  h1 { margin-bottom: 5px; }
+h1 {
+  margin: 10px 0 5px;
+  font-size: 24px;
+}
 
-  .note {
-    font-size: 72px;
-    font-weight: 700;
-  }
+.note {
+  font-size: 64px;
+  font-weight: 800;
+}
 
-  .freq {
-    opacity: 0.8;
-    margin-top: -5px;
-  }
+.freq {
+  opacity: 0.8;
+  margin-bottom: 10px;
+}
 
-  .meter {
-    width: 320px;
-    height: 8px;
-    background: #1e293b;
-    margin: 25px auto;
-    border-radius: 4px;
-    position: relative;
-  }
+.meter {
+  width: 100%;
+  max-width: 320px;
+  height: 8px;
+  background: #1e293b;
+  margin: 20px auto;
+  border-radius: 4px;
+  position: relative;
+}
 
-  .needle {
-    width: 4px;
-    height: 26px;
-    background: #22c55e;
-    position: absolute;
-    top: -9px;
-    left: 50%;
-    transform-origin: bottom;
-  }
+.needle {
+  width: 4px;
+  height: 28px;
+  background: #22c55e;
+  position: absolute;
+  top: -10px;
+  left: 50%;
+}
 
-  .status {
-    font-size: 18px;
-    margin-top: 10px;
-  }
+.status {
+  font-size: 16px;
+  margin-top: 8px;
+}
 
-  button {
-    margin-top: 25px;
-    padding: 12px 24px;
-    font-size: 16px;
-    background: #22c55e;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-  }
+.strings {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  max-width: 360px;
+  margin: 20px auto;
+}
+
+.strings button {
+  padding: 12px 0;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background: #1e293b;
+  color: #e5e7eb;
+}
+
+.strings button.active {
+  background: #22c55e;
+  color: #020617;
+  font-weight: 700;
+}
+
+.start {
+  margin-top: 15px;
+  padding: 14px;
+  width: 100%;
+  max-width: 300px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  background: #22c55e;
+}
 </style>
 </head>
 
 <body>
+
 <h1>🎸 Pro Guitar Tuner</h1>
-<div class="note" id="note">--</div>
-<div class="freq" id="freq">0.00 Hz</div>
+<div class="note" id="note">E2</div>
+<div class="freq" id="freq">82.41 Hz</div>
 
 <div class="meter">
   <div class="needle" id="needle"></div>
 </div>
 
-<div class="status" id="status">Tekan Start</div>
-<button onclick="start()">Start</button>
+<div class="status" id="status">Pilih senar & petik</div>
+
+<div class="strings">
+  <button onclick="selectString(0)" class="active">E</button>
+  <button onclick="selectString(1)">A</button>
+  <button onclick="selectString(2)">D</button>
+  <button onclick="selectString(3)">G</button>
+  <button onclick="selectString(4)">B</button>
+  <button onclick="selectString(5)">E</button>
+</div>
+
+<button class="start" onclick="start()">Start</button>
 
 <script>
 let ctx, analyser, buffer;
 let freqHistory = [];
-let lockedString = null;
+let currentString = 0;
 let lastPluck = 0;
 
 const STRINGS = [
-  { note: "E2", freq: 82.41 },
-  { note: "A2", freq: 110.00 },
-  { note: "D3", freq: 146.83 },
-  { note: "G3", freq: 196.00 },
-  { note: "B3", freq: 246.94 },
-  { note: "E4", freq: 329.63 }
+  { note: "E2", freq: 82.41, band: 120 },
+  { note: "A2", freq: 110.00, band: 160 },
+  { note: "D3", freq: 146.83, band: 220 },
+  { note: "G3", freq: 196.00, band: 300 },
+  { note: "B3", freq: 246.94, band: 380 },
+  { note: "E4", freq: 329.63, band: 480 }
 ];
+
+let bandpass;
+
+function selectString(i) {
+  currentString = i;
+  freqHistory = [];
+  lastPluck = performance.now();
+
+  document.querySelectorAll(".strings button")
+    .forEach((b, idx) => b.classList.toggle("active", idx === i));
+
+  document.getElementById("note").textContent = STRINGS[i].note;
+  document.getElementById("freq").textContent = STRINGS[i].freq + " Hz";
+
+  if (bandpass) bandpass.frequency.value = STRINGS[i].band;
+}
 
 async function start() {
   ctx = new AudioContext();
-
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const source = ctx.createMediaStreamSource(stream);
 
-  // Band-pass khusus gitar
-  const bandpass = ctx.createBiquadFilter();
+  bandpass = ctx.createBiquadFilter();
   bandpass.type = "bandpass";
-  bandpass.frequency.value = 180;
+  bandpass.frequency.value = STRINGS[currentString].band;
   bandpass.Q.value = 0.8;
 
   analyser = ctx.createAnalyser();
@@ -114,7 +169,6 @@ async function start() {
 function detect() {
   analyser.getFloatTimeDomainData(buffer);
 
-  // Ignore attack (200 ms)
   if (performance.now() - lastPluck < 200) {
     requestAnimationFrame(detect);
     return;
@@ -126,7 +180,6 @@ function detect() {
     return;
   }
 
-  // Weighted smoothing (low freq optimized)
   freqHistory.push(freq);
   if (freqHistory.length > 8) freqHistory.shift();
 
@@ -138,10 +191,10 @@ function detect() {
   });
   freq = weighted / total;
 
-  let target = lockString(freq);
-  let cents = centsOff(freq, target.freq);
+  const target = STRINGS[currentString];
+  const cents = 1200 * Math.log2(freq / target.freq);
 
-  updateUI(target.note, freq, cents);
+  updateUI(freq, cents);
   requestAnimationFrame(detect);
 }
 
@@ -154,7 +207,6 @@ function autoCorrelate(buf, sampleRate) {
   if (rms < 0.01) return -1;
 
   let c = new Float32Array(size);
-
   for (let i = 0; i < size; i++)
     for (let j = 0; j < size - i; j++)
       c[i] += buf[j] * buf[j + i];
@@ -170,33 +222,15 @@ function autoCorrelate(buf, sampleRate) {
     }
   }
 
-  if (max < 0.15) return -1; // confidence threshold
+  if (max < 0.15) return -1;
 
-  // Parabolic interpolation
   let x1 = c[pos - 1], x2 = c[pos], x3 = c[pos + 1];
   let shift = (x3 - x1) / (2 * (2 * x2 - x1 - x3));
 
   return sampleRate / (pos + shift);
 }
 
-function lockString(freq) {
-  if (lockedString && Math.abs(freq - lockedString.freq) < 4) {
-    return lockedString;
-  }
-
-  lockedString = STRINGS.reduce((a, b) =>
-    Math.abs(freq - a.freq) < Math.abs(freq - b.freq) ? a : b
-  );
-
-  return lockedString;
-}
-
-function centsOff(freq, ref) {
-  return 1200 * Math.log2(freq / ref);
-}
-
-function updateUI(note, freq, cents) {
-  document.getElementById("note").textContent = note;
+function updateUI(freq, cents) {
   document.getElementById("freq").textContent = freq.toFixed(2) + " Hz";
 
   const needle = document.getElementById("needle");
@@ -217,5 +251,6 @@ function updateUI(note, freq, cents) {
   }
 }
 </script>
+
 </body>
 </html>
