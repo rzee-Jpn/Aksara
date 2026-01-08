@@ -1,0 +1,90 @@
+:root{
+  --bg:#f4f4f4;
+  --card:#ffffff;
+  --text:#222;
+  --accent:#b89b5e;
+}
+.dark{
+  --bg:#0f0f0f;
+  --card:#161616;
+  --text:#eaeaea;
+}
+
+body{
+  margin:0;
+  padding:20px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Poppins,Arial;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  background:var(--card);
+  padding:25px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
+}
+
+h2{
+  text-align:center;
+  letter-spacing:2px;
+}
+
+label{
+  font-size:13px;
+}
+
+input,select{
+  width:100%;
+  padding:10px;
+  margin-bottom:12px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:linear-gradient(135deg,#c9a44c,#e6c36a);
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button.link{
+  background:none;
+  color:#0077ff;
+  margin-bottom:10px;
+}
+
+.toggle{
+  background:none;
+  border:none;
+  font-size:18px;
+}
+
+.card{
+  margin-top:20px;
+  padding:15px;
+  border-radius:10px;
+  background:#fff;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+th,td{
+  padding:6px;
+  border-bottom:1px solid #ddd;
+  text-align:center;
+}
+
+canvas{
+  margin-top:25px;
+}
