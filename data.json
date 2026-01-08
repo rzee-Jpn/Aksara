@@ -1,0 +1,45 @@
+{
+  "tools": [
+    {
+      "title": "Generator Aksara",
+      "image": "assets/tools/aksara.jpg",
+      "link": "https://anglumea.github.io/aksara"
+    },
+    {
+      "title": "Kalkulator Dana Pensiun",
+      "image": "assets/tools/pensiun.jpg",
+      "link": "https://anglumea.github.io/pensiun"
+    },
+    {
+      "title": "Text Transformer",
+      "image": "assets/tools/transformer.jpg",
+      "link": "https://anglumea.github.io/transformer"
+    }
+  ],
+
+  "projects": [
+    {
+      "title": "Anglumea Core",
+      "image": "assets/projects/core.jpg",
+      "link": "#"
+    },
+    {
+      "title": "Utility System",
+      "image": "assets/projects/utility.jpg",
+      "link": "#"
+    }
+  ],
+
+  "games": [
+    {
+      "title": "Silent Loop",
+      "image": "assets/games/silentloop.jpg",
+      "link": "#"
+    },
+    {
+      "title": "Prototype One",
+      "image": "assets/games/prototype.jpg",
+      "link": "#"
+    }
+  ]
+}
