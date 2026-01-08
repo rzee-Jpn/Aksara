@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Cicilan – Investor Edition</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- html2pdf -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+  <button class="toggle" onclick="toggleMode()">🌙 / ☀️</button>
+
+  <h2>Kalkulator Cicilan – Investor Class</h2>
+
+  <label>Nama Klien</label>
+  <input id="namaUser" placeholder="Nama Anda">
+
+  <label>Harga Aset</label>
+  <input id="harga" oninput="formatRp(this)">
+
+  <label>DP</label>
+  <input id="dp" oninput="formatRp(this)">
+
+  <label>Suku Bunga (%)</label>
+  <input type="number" id="bunga" value="10">
+
+  <label>Jenis Bunga</label>
+  <select id="bungaTipe">
+    <option value="efektif">Efektif (Anuitas)</option>
+    <option value="flat">Flat</option>
+  </select>
+
+  <label>Rentang Bunga</label>
+  <select id="tipeBunga">
+    <option value="tahun">Per Tahun</option>
+    <option value="bulan">Per Bulan</option>
+  </select>
+
+  <label>Tenor</label>
+  <select id="tenor">
+    <option value="60">5 Tahun</option>
+    <option value="120">10 Tahun</option>
+    <option value="180">15 Tahun</option>
+    <option value="240">20 Tahun</option>
+  </select>
+
+  <label>Biaya Admin</label>
+  <input id="admin" oninput="formatRp(this)">
+
+  <label>Provisi (%)</label>
+  <input type="number" id="provisi" value="1">
+
+  <label>Asuransi</label>
+  <input id="asuransi" oninput="formatRp(this)">
+
+  <button class="link" onclick="toggleDTI()">⚠️ Opsional: Cek DTI</button>
+  <div id="dtiSection" style="display:none">
+    <label>Gaji Bulanan</label>
+    <input id="gaji" oninput="formatRp(this)">
+  </div>
+
+  <button onclick="hitung()">Hitung Cicilan</button>
+  <button id="downloadBtn" onclick="downloadPDF()" style="display:none">
+    📄 Export Investor PDF
+  </button>
+
+  <div id="summary" class="card" style="display:none"></div>
+  <div id="detail"></div>
+
+  <canvas id="grafikCicilan"></canvas>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
