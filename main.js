@@ -1,3 +1,24 @@
+/* ===== LOAD JSON DATA ===== */
+fetch("data.json")
+  .then(r => r.json())
+  .then(data => {
+    document.querySelectorAll(".slider").forEach(slider => {
+      const key = slider.dataset.panel;
+      const items = data[key];
+      if (!items) return;
+
+      slider.innerHTML = items.map((item, i) => `
+        <div class="card ${i === 0 ? "active" : ""}">
+          <a href="${item.link}" target="_blank">
+            <img src="${item.image}" alt="${item.title}">
+            <h3>${item.title}</h3>
+          </a>
+        </div>
+      `).join("");
+    });
+  });
+
+/* ===== CORE LOGIC ===== */
 const panels = document.querySelectorAll(".panel");
 const buttons = document.querySelectorAll(".core-nav button");
 const track = document.querySelector(".track");
@@ -18,23 +39,21 @@ const copy = {
 };
 
 function updateArrows() {
-  const show = active;
-  arrowLeft.style.display = show ? "flex" : "none";
-  arrowRight.style.display = show ? "flex" : "none";
+  arrowLeft.style.display = active ? "flex" : "none";
+  arrowRight.style.display = active ? "flex" : "none";
 }
 
-/* --- SHOW PANEL --- */
 function showPanel(index) {
   currentIndex = index;
   const nav = document.querySelector(".core-nav");
-  gsap.to(nav, { opacity: 0, duration: 0.25, onComplete: () => (nav.style.pointerEvents = "none") });
 
-  panels.forEach((p, i) => (p.style.display = i === index ? "flex" : "none"));
+  gsap.to(nav, { opacity: 0, duration: 0.25, onComplete: () => nav.style.pointerEvents = "none" });
+  panels.forEach((p, i) => p.style.display = i === index ? "flex" : "none");
 
   if (!active) {
     active = true;
     viewport.classList.add("active");
-    gsap.to(track, { opacity: 1, duration: 0.5, ease: "power2.out" });
+    gsap.to(track, { opacity: 1, duration: 0.5 });
     viewport.style.pointerEvents = "auto";
   }
 
@@ -43,82 +62,62 @@ function showPanel(index) {
   updateArrows();
 }
 
-/* --- UPDATE SLIDE --- */
 function updateSlide() {
-  const panel = panels[currentIndex];
-  const cards = panel.querySelectorAll(".card");
+  const cards = panels[currentIndex].querySelectorAll(".card");
   cards.forEach((c, i) => {
-    const isActive = i === currentSlide;
-    c.classList.toggle("active", isActive);
-    gsap.to(c, {
-      opacity: isActive ? 1 : 0,
-      scale: isActive ? 1 : 0.9,
-      duration: 0.4,
-      ease: "power2.out"
-    });
+    const on = i === currentSlide;
+    c.classList.toggle("active", on);
+    gsap.to(c, { opacity: on ? 1 : 0, scale: on ? 1 : 0.9, duration: 0.4 });
   });
 }
 
-/* --- MOVE SLIDE --- */
 function moveSlide(dir) {
-  if (currentIndex === null) return;
   const cards = panels[currentIndex].querySelectorAll(".card");
   currentSlide = (currentSlide + dir + cards.length) % cards.length;
   updateSlide();
 }
 
-/* --- NAV BUTTONS --- */
 buttons.forEach((btn, i) => {
-  btn.addEventListener("click", e => {
+  btn.onclick = e => {
     e.stopPropagation();
     showPanel(i);
-  });
+  };
 });
 
-/* --- CLOSE ON EMPTY CLICK --- */
 document.addEventListener("click", () => {
   if (!active) return;
   active = false;
   currentIndex = null;
+
   gsap.to(track, { opacity: 0, duration: 0.35 });
   viewport.classList.remove("active");
   viewport.style.pointerEvents = "none";
-  panels.forEach(p => (p.style.display = "none"));
-  updateArrows();
+  panels.forEach(p => p.style.display = "none");
 
   const nav = document.querySelector(".core-nav");
   nav.style.pointerEvents = "auto";
   gsap.to(nav, { opacity: 1, duration: 0.3 });
+  updateArrows();
 });
 
-/* --- PREVENT CLOSING WHEN CLICK INSIDE PANEL --- */
-panels.forEach(p => p.addEventListener("click", e => e.stopPropagation()));
+panels.forEach(p => p.onclick = e => e.stopPropagation());
+arrowLeft.onclick = e => (e.stopPropagation(), moveSlide(-1));
+arrowRight.onclick = e => (e.stopPropagation(), moveSlide(1));
 
-/* --- ARROWS --- */
-arrowLeft.addEventListener("click", e => {
-  e.stopPropagation();
-  moveSlide(-1);
-});
-arrowRight.addEventListener("click", e => {
-  e.stopPropagation();
-  moveSlide(1);
-});
-
-/* --- MODALS --- */
 document.querySelectorAll(".peripheral span").forEach(el => {
   el.onclick = e => {
     e.stopPropagation();
-    modalBox.textContent = copy[el.dataset.modal] || "";
+    modalBox.textContent = copy[el.dataset.modal];
     modal.style.display = "flex";
   };
 });
-modal.onclick = () => (modal.style.display = "none");
+modal.onclick = () => modal.style.display = "none";
 
-/* --- PARALLAX BACKGROUND --- */
+/* PARALLAX */
 let px = 0, py = 0, ticking = false;
 document.addEventListener("mousemove", e => {
-  px = (e.clientX / window.innerWidth - 0.5) * 8;
-  py = (e.clientY / window.innerHeight - 0.5) * 8;
+  px = (e.clientX / innerWidth - 0.5) * 8;
+  py = (e.clientY / innerHeight - 0.5) * 8;
   if (!ticking) {
     requestAnimationFrame(() => {
       gsap.to("#bg-parallax", { x: px, y: py, duration: 0.8 });
@@ -128,5 +127,4 @@ document.addEventListener("mousemove", e => {
   }
 });
 
-window.addEventListener("resize", updateArrows);
 updateArrows();
