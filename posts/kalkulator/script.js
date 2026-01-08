@@ -1,15 +1,31 @@
 let chart;
 let REPORT_DATA = null;
 
+/* ===== DOM ===== */
+const namaUser = document.getElementById("namaUser");
+const harga = document.getElementById("harga");
+const dp = document.getElementById("dp");
+const bungaInput = document.getElementById("bunga");
+const tenor = document.getElementById("tenor");
+const tipeBungaEl = document.getElementById("tipeBunga");
+const bungaTipe = document.getElementById("bungaTipe");
+const admin = document.getElementById("admin");
+const provisi = document.getElementById("provisi");
+const asuransi = document.getElementById("asuransi");
+const summary = document.getElementById("summary");
+const detail = document.getElementById("detail");
+const grafikCicilan = document.getElementById("grafikCicilan");
+const downloadBtn = document.getElementById("downloadBtn");
+
 function toggleMode(){
   document.body.classList.toggle("dark");
 }
 function toggleDTI(){
-  const d = document.getElementById("dtiSection");
-  d.style.display = d.style.display==="none"?"block":"none";
+  const d=document.getElementById("dtiSection");
+  d.style.display=d.style.display==="none"?"block":"none";
 }
 function formatRp(i){
-  i.value = new Intl.NumberFormat("id-ID")
+  i.value=new Intl.NumberFormat("id-ID")
     .format(i.value.replace(/\D/g,""));
 }
 function num(v){
@@ -21,49 +37,48 @@ function rp(v){
 
 function hitung(){
   const nama = namaUser.value || "Client";
-  const harga = num(harga.value);
-  const dp = num(dp.value);
-  const bunga = bungaEl = parseFloat(bunga.value)/100;
-  const tenor = parseInt(tenor.value);
-  const tipeBunga = tipeBunga.value;
+  const hargaVal = num(harga.value);
+  const dpVal = num(dp.value);
+
+  const bunga = parseFloat(bungaInput.value)/100;
+  const tenorVal = parseInt(tenor.value);
+  const tipeBunga = tipeBungaEl.value;
   const metode = bungaTipe.value;
 
-  const admin = num(admin.value);
-  const provisi = num(harga-dp) * (parseFloat(provisi.value)/100);
-  const asuransi = num(asuransi.value);
+  const adminVal = num(admin.value);
+  const provisiVal = (hargaVal-dpVal)*(parseFloat(provisi.value)/100);
+  const asuransiVal = num(asuransi.value);
 
-  const pinjaman = harga-dp;
+  const pinjaman = hargaVal-dpVal;
   const bungaBulanan = tipeBunga==="tahun"?bunga/12:bunga;
 
-  let sisa = pinjaman;
-  let table = `
-  <div class="result-table-wrapper">
-  <table>
-    <tr><th>Bulan</th><th>Cicilan</th><th>Pokok</th><th>Bunga</th><th>Sisa</th></tr>`;
-
   let cicilan;
+  let sisa = pinjaman;
+  let total = 0;
+  let cumulative=[];
+
   if(metode==="efektif"){
-    cicilan = (pinjaman*bungaBulanan)/(1-Math.pow(1+bungaBulanan,-tenor));
+    cicilan=(pinjaman*bungaBulanan)/(1-Math.pow(1+bungaBulanan,-tenorVal));
   }
 
-  let total = 0;
-  let cumulative = [];
+  let table=`<table>
+  <tr><th>Bulan</th><th>Cicilan</th><th>Pokok</th><th>Bunga</th><th>Sisa</th></tr>`;
 
-  for(let i=1;i<=tenor;i++){
-    let bungaB, pokok;
+  for(let i=1;i<=tenorVal;i++){
+    let bungaB,pokok;
     if(metode==="efektif"){
-      bungaB = sisa*bungaBulanan;
-      pokok = cicilan-bungaB;
+      bungaB=sisa*bungaBulanan;
+      pokok=cicilan-bungaB;
     }else{
-      pokok = pinjaman/tenor;
-      bungaB = pinjaman*bungaBulanan;
-      cicilan = pokok+bungaB;
+      pokok=pinjaman/tenorVal;
+      bungaB=pinjaman*bungaBulanan;
+      cicilan=pokok+bungaB;
     }
-    sisa -= pokok;
-    total += cicilan;
+    sisa-=pokok;
+    total+=cicilan;
     cumulative.push(total);
 
-    table += `<tr>
+    table+=`<tr>
       <td>${i}</td>
       <td>Rp ${rp(cicilan)}</td>
       <td>Rp ${rp(pokok)}</td>
@@ -71,103 +86,44 @@ function hitung(){
       <td>Rp ${rp(Math.max(sisa,0))}</td>
     </tr>`;
   }
-  table += `</table></div>`;
+  table+=`</table>`;
 
-  const biayaAwal = dp+admin+provisi+asuransi;
+  const biayaAwal=dpVal+adminVal+provisiVal+asuransiVal;
 
   summary.style.display="block";
   summary.innerHTML=`
     <b>Nama:</b> ${nama}<br>
     <b>Pinjaman:</b> Rp ${rp(pinjaman)}<br>
-    <b>Cicilan / Bulan:</b> Rp ${rp(cicilan)}<br>
+    <b>Cicilan:</b> Rp ${rp(cicilan)}<br>
     <b>Biaya Awal:</b> Rp ${rp(biayaAwal)}<br>
-    <b>Total Pembayaran:</b> Rp ${rp(total+biayaAwal)}
+    <b>Total:</b> Rp ${rp(total+biayaAwal)}
   `;
-
-  detail.innerHTML=`<h3>Rincian</h3>${table}`;
+  detail.innerHTML=table;
 
   if(chart) chart.destroy();
-  chart = new Chart(grafikCicilan,{
+  chart=new Chart(grafikCicilan,{
     type:'line',
     data:{
       labels:cumulative.map((_,i)=>i+1),
       datasets:[{
         label:'Cumulative Payment',
         data:cumulative,
+        borderColor:'#b89b5e',
+        backgroundColor:'rgba(184,155,94,0.25)',
         fill:true
       }]
     }
   });
 
-  REPORT_DATA = {
+  REPORT_DATA={
     nama,
     tanggal:new Date().toLocaleDateString("id-ID"),
     pinjaman,
     cicilan,
-    biayaAwal,
-    total: total+biayaAwal,
-    tenor,
-    bunga:bunga*100,
-    metode,
+    total:total+biayaAwal,
+    tenor:tenorVal,
     table,
-    chart: chart.toBase64Image()
+    chart:chart.toBase64Image()
   };
-
   downloadBtn.style.display="block";
-}
-
-/* ===== PDF ULTRA LUXURY ===== */
-
-function buildPDF(d){
-  return `
-  <div style="padding:45px;font-family:'Times New Roman',serif;">
-    <h2 style="text-align:center;letter-spacing:4px;">
-      PRIVATE FINANCIAL REPORT
-    </h2>
-    <p style="text-align:center;font-size:11px;">
-      Confidential – Investor Class
-    </p>
-    <hr>
-
-    <table width="100%" style="margin:20px 0;">
-      <tr>
-        <td><b>Client</b><br>${d.nama}</td>
-        <td align="right"><b>Date</b><br>${d.tanggal}</td>
-      </tr>
-    </table>
-
-    <table width="100%" border="1" cellpadding="12">
-      <tr>
-        <td>Loan Principal<br><b>Rp ${rp(d.pinjaman)}</b></td>
-        <td>Monthly Installment<br><b>Rp ${rp(d.cicilan)}</b></td>
-      </tr>
-      <tr>
-        <td>Total Cost<br><b>Rp ${rp(d.total)}</b></td>
-        <td>Tenor<br><b>${d.tenor} Bulan</b></td>
-      </tr>
-    </table>
-
-    <h3>Payment Schedule</h3>
-    ${d.table}
-
-    <div style="page-break-before:always"></div>
-    <h3 style="text-align:center">Projection</h3>
-    <img src="${d.chart}" style="width:100%">
-
-    <p style="font-size:9px;text-align:center;margin-top:30px;">
-      Simulation only. Not a financial offer.
-    </p>
-  </div>`;
-}
-
-function downloadPDF(){
-  if(!REPORT_DATA) return alert("Hitung dulu");
-  const div=document.createElement("div");
-  div.innerHTML=buildPDF(REPORT_DATA);
-
-  html2pdf().from(div).set({
-    filename:`Investor_Report_${REPORT_DATA.nama}.pdf`,
-    html2canvas:{scale:2},
-    jsPDF:{format:'a4'}
-  }).save();
 }
