@@ -175,6 +175,7 @@ function hitung(){
    → TEMPLATE BLACK–GOLD
    → SIGNATURE GOLD
 ===================== */
+
 function downloadPDF(){
   if(!REPORT_DATA){
     alert("Hitung simulasi terlebih dahulu");
@@ -184,20 +185,17 @@ function downloadPDF(){
   const d = REPORT_DATA;
 
   const div = document.createElement("div");
-  div.innerHTML = `
-  <div style="
-    background:#0b0b0b;
-    color:#eaeaea;
-    padding:50px;
-    font-family:Times New Roman,serif;
-  ">
+  div.style.background = "#0b0b0b";
+  div.style.color = "#eaeaea";
+  div.style.padding = "50px";
+  div.style.fontFamily = "Times New Roman, serif";
 
-    <!-- HEADER -->
+  div.innerHTML = `
     <div style="text-align:center;margin-bottom:30px">
       <div style="color:#b89b5e;letter-spacing:4px;font-size:13px">
         CONFIDENTIAL INVESTMENT REPORT
       </div>
-      <h1 style="margin:10px 0;color:#fff">
+      <h1 style="margin:10px 0;color:#ffffff">
         PRIVATE FINANCIAL PROJECTION
       </h1>
       <div style="color:#888;font-size:11px">
@@ -205,72 +203,73 @@ function downloadPDF(){
       </div>
     </div>
 
-    <!-- CLIENT INFO -->
     <table width="100%" style="margin-bottom:30px">
       <tr>
         <td>
-          <b style="color:#b89b5e">Client</b><br>
-          ${d.nama}
+          <span style="color:#b89b5e">Client</span><br>${d.nama}
         </td>
         <td align="right">
-          <b style="color:#b89b5e">Date</b><br>
-          ${d.tanggal}
+          <span style="color:#b89b5e">Date</span><br>${d.tanggal}
         </td>
       </tr>
     </table>
 
-    <!-- METRICS -->
-    <table width="100%" cellpadding="16" style="
+    <table width="100%" cellpadding="14" style="
       border:1px solid #b89b5e;
-      margin-bottom:35px
+      margin-bottom:35px;
+      color:#eaeaea
     ">
       <tr>
         <td>
           Loan Principal<br>
-          <b style="font-size:16px">Rp ${rp(d.totalPokok)}</b>
+          <b>Rp ${rp(d.totalPokok)}</b>
         </td>
         <td>
           Monthly Installment<br>
-          <b style="font-size:16px">Rp ${rp(d.cicilan)}</b>
+          <b>Rp ${rp(d.cicilan)}</b>
         </td>
       </tr>
       <tr>
         <td>
           Total Interest<br>
-          <b style="font-size:16px;color:#b89b5e">
+          <b style="color:#b89b5e">
             Rp ${rp(d.totalBunga)}
           </b>
         </td>
         <td>
           Total Payment<br>
-          <b style="font-size:16px">
-            Rp ${rp(d.totalBayar)}
-          </b>
+          <b>Rp ${rp(d.totalBayar)}</b>
         </td>
       </tr>
     </table>
 
-    <!-- PAYMENT SCHEDULE -->
     <h3 style="color:#b89b5e;letter-spacing:2px">
       PAYMENT SCHEDULE
     </h3>
-    ${d.table}
 
-    <!-- PAGE BREAK -->
+    ${d.table.replace(
+      "<table>",
+      "<table style='width:100%;border-collapse:collapse;color:#eaeaea'>"
+    ).replaceAll(
+      "<td>",
+      "<td style='border-bottom:1px solid #333;padding:6px;text-align:center'>"
+    ).replaceAll(
+      "<th>",
+      "<th style='border-bottom:1px solid #b89b5e;padding:6px;text-align:center;color:#b89b5e'>"
+    )}
+
     <div style="page-break-before:always"></div>
 
-    <!-- CHART -->
     <h3 style="text-align:center;color:#b89b5e">
       PAYMENT PROJECTION
     </h3>
     <img src="${d.chart}" style="width:100%;margin-top:20px">
 
-    <!-- SIGNATURE -->
     <div style="margin-top:70px">
       <div style="color:#b89b5e;font-size:12px;letter-spacing:2px">
         SIGNED & AUTHORIZED BY
       </div>
-      <div style="font-size:20px;margin-top:5px">
+      <div style="font-size:22px;margin-top:5px">
         ANGLUMEA
       </div>
       <div style="font-size:11px;color:#aaa">
@@ -278,7 +277,6 @@ function downloadPDF(){
       </div>
     </div>
 
-    <!-- FOOTNOTE -->
     <p style="
       font-size:9px;
       color:#777;
@@ -288,16 +286,11 @@ function downloadPDF(){
       This report is a financial simulation only and does not constitute
       an offer or financial advice.
     </p>
-
-  </div>
   `;
 
-  html2pdf()
-    .from(div)
-    .set({
-      filename:`Anglumea_Private_Report_${d.nama}.pdf`,
-      html2canvas:{scale:2,backgroundColor:null},
-      jsPDF:{format:"a4",orientation:"portrait"}
-    })
-    .save();
+  html2pdf().from(div).set({
+    filename:`Anglumea_Private_Report_${d.nama}.pdf`,
+    html2canvas:{scale:2},
+    jsPDF:{format:"a4",orientation:"portrait"}
+  }).save();
 }
