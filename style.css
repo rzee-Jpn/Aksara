@@ -194,3 +194,27 @@ html,body{
   .arrow-right{right:20px;}
   .status, .peripheral{bottom:16px;}
 }
+
+
+
+.card a {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  opacity: 0.9;
+}
+
+.card h3 {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.4px;
+}
