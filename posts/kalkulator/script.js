@@ -185,26 +185,118 @@ function downloadPDF(){
 
   const div = document.createElement("div");
   div.innerHTML = `
-    <h2 style="text-align:center">PRIVATE INVESTOR REPORT</h2>
-    <p><b>Nama:</b> ${d.nama}</p>
-    <p><b>Tanggal:</b> ${d.tanggal}</p>
-    <hr>
-    <p><b>Pinjaman Pokok:</b> Rp ${rp(d.totalPokok)}</p>
-    <p><b>Total Bunga:</b> Rp ${rp(d.totalBunga)}</p>
-    <p><b>Total Pembayaran:</b> Rp ${rp(d.totalBayar)}</p>
+  <div style="
+    background:#0b0b0b;
+    color:#eaeaea;
+    padding:50px;
+    font-family:Times New Roman,serif;
+  ">
+
+    <!-- HEADER -->
+    <div style="text-align:center;margin-bottom:30px">
+      <div style="color:#b89b5e;letter-spacing:4px;font-size:13px">
+        CONFIDENTIAL INVESTMENT REPORT
+      </div>
+      <h1 style="margin:10px 0;color:#fff">
+        PRIVATE FINANCIAL PROJECTION
+      </h1>
+      <div style="color:#888;font-size:11px">
+        Generated for High-Net-Worth Investor
+      </div>
+    </div>
+
+    <!-- CLIENT INFO -->
+    <table width="100%" style="margin-bottom:30px">
+      <tr>
+        <td>
+          <b style="color:#b89b5e">Client</b><br>
+          ${d.nama}
+        </td>
+        <td align="right">
+          <b style="color:#b89b5e">Date</b><br>
+          ${d.tanggal}
+        </td>
+      </tr>
+    </table>
+
+    <!-- METRICS -->
+    <table width="100%" cellpadding="16" style="
+      border:1px solid #b89b5e;
+      margin-bottom:35px
+    ">
+      <tr>
+        <td>
+          Loan Principal<br>
+          <b style="font-size:16px">Rp ${rp(d.totalPokok)}</b>
+        </td>
+        <td>
+          Monthly Installment<br>
+          <b style="font-size:16px">Rp ${rp(d.cicilan)}</b>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Total Interest<br>
+          <b style="font-size:16px;color:#b89b5e">
+            Rp ${rp(d.totalBunga)}
+          </b>
+        </td>
+        <td>
+          Total Payment<br>
+          <b style="font-size:16px">
+            Rp ${rp(d.totalBayar)}
+          </b>
+        </td>
+      </tr>
+    </table>
+
+    <!-- PAYMENT SCHEDULE -->
+    <h3 style="color:#b89b5e;letter-spacing:2px">
+      PAYMENT SCHEDULE
+    </h3>
     ${d.table}
+
+    <!-- PAGE BREAK -->
+    <div style="page-break-before:always"></div>
+
+    <!-- CHART -->
+    <h3 style="text-align:center;color:#b89b5e">
+      PAYMENT PROJECTION
+    </h3>
     <img src="${d.chart}" style="width:100%;margin-top:20px">
-    <p style="margin-top:60px">
-      <b>ANGLUMEA</b><br>
-      Financial Strategy & Investment Intelligence
+
+    <!-- SIGNATURE -->
+    <div style="margin-top:70px">
+      <div style="color:#b89b5e;font-size:12px;letter-spacing:2px">
+        SIGNED & AUTHORIZED BY
+      </div>
+      <div style="font-size:20px;margin-top:5px">
+        ANGLUMEA
+      </div>
+      <div style="font-size:11px;color:#aaa">
+        Financial Strategy & Investment Intelligence
+      </div>
+    </div>
+
+    <!-- FOOTNOTE -->
+    <p style="
+      font-size:9px;
+      color:#777;
+      margin-top:40px;
+      text-align:center
+    ">
+      This report is a financial simulation only and does not constitute
+      an offer or financial advice.
     </p>
+
+  </div>
   `;
 
   html2pdf()
     .from(div)
     .set({
-      filename: `Anglumea_Investor_Report_${d.nama}.pdf`,
-      html2canvas:{scale:2},
+      filename:`Anglumea_Private_Report_${d.nama}.pdf`,
+      html2canvas:{scale:2,backgroundColor:null},
       jsPDF:{format:"a4",orientation:"portrait"}
     })
     .save();
