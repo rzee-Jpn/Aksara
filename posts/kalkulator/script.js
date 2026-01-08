@@ -177,24 +177,109 @@ function hitung(){
 ===================== */
 
 function downloadPDF() {
-  const signature = "ANG L U M E A  •  PRIVATE INVESTMENT";
+  if (!REPORT_DATA) return alert("Hitung dulu");
 
-  const sigPattern = Array(30).fill(signature.repeat(3)).join("\n");
+  const signature = "ANG L U M E A  •  PRIVATE INVESTMENT";
+  const sigPattern = Array(40).fill(signature.repeat(4)).join("\n");
 
   const div = document.createElement("div");
+
   div.innerHTML = `
+  <style>
+    @page { size: A4; margin: 0; }
+
+    .pdf-page{
+      width:210mm;
+      height:297mm;
+      background:#000;
+      color:#e6d6a3;
+      font-family:"Times New Roman",serif;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .pdf-page::before{
+      content:"";
+      position:absolute;
+      inset:12mm;
+      border:1px solid #b89b5e;
+      z-index:1;
+    }
+
+    .signature-text{
+      position:absolute;
+      inset:0;
+      font-size:26px;
+      color:rgba(184,155,94,.07);
+      transform:rotate(-30deg);
+      line-height:80px;
+      white-space:pre;
+      z-index:0;
+    }
+
+    .content{
+      position:relative;
+      z-index:2;
+      padding:30mm;
+    }
+
+    h1{
+      text-align:center;
+      letter-spacing:4px;
+      margin-bottom:8px;
+    }
+
+    .subtitle{
+      text-align:center;
+      font-size:13px;
+      opacity:.8;
+      margin-bottom:30px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:11px;
+    }
+
+    th,td{
+      border-bottom:1px solid rgba(184,155,94,.3);
+      padding:6px;
+      text-align:center;
+    }
+
+    th{color:#f1e3b0;}
+
+    .gold-line{
+      height:1px;
+      background:linear-gradient(to right,transparent,#b89b5e,transparent);
+      margin:20px 0;
+    }
+
+    .footer{
+      position:absolute;
+      bottom:18mm;
+      left:30mm;
+      right:30mm;
+      display:flex;
+      justify-content:space-between;
+      font-size:10px;
+      opacity:.75;
+      z-index:2;
+    }
+  </style>
+
   <div class="pdf-page">
-    <div class="signature-bg"></div>
     <div class="signature-text">${sigPattern}</div>
 
-    <div class="pdf-content">
+    <div class="content">
       <h1>PRIVATE INVESTOR REPORT</h1>
       <div class="subtitle">Confidential • High Net Worth Individual</div>
 
       <div class="gold-line"></div>
 
       <p><b>Client:</b> ${REPORT_DATA.nama}</p>
-      <p><b>Date:</b> ${new Date().toLocaleDateString("id-ID")}</p>
+      <p><b>Date:</b> ${REPORT_DATA.tanggal}</p>
 
       <div class="gold-line"></div>
 
@@ -202,7 +287,7 @@ function downloadPDF() {
 
       <div class="gold-line"></div>
 
-      <img src="${REPORT_DATA.chart}" style="width:100%; margin-top:15px">
+      <img src="${REPORT_DATA.chart}" style="width:100%;margin-top:20px">
     </div>
 
     <div class="footer">
@@ -212,18 +297,20 @@ function downloadPDF() {
   </div>
   `;
 
-  html2pdf().from(div).set({
-    margin: 0,
-    filename: "Anglumea_Investor_Report.pdf",
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#000"
-    },
-    jsPDF: {
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait"
-    }
-  }).save();
+  html2pdf()
+    .from(div)
+    .set({
+      margin:0,
+      filename:"Anglumea_Luxury_Report.pdf",
+      html2canvas:{
+        scale:3,
+        backgroundColor:"#000"
+      },
+      jsPDF:{
+        unit:"mm",
+        format:"a4",
+        orientation:"portrait"
+      }
+    })
+    .save();
 }
