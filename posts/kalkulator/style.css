@@ -74,3 +74,119 @@ th,td{
   text-align:center;
 }
 canvas{margin-top:20px}
+
+
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Times New Roman", serif;
+  background: #000;
+  color: #e6d6a3;
+}
+
+.pdf-page {
+  position: relative;
+  width: 210mm;
+  height: 297mm;
+  padding: 30mm;
+  box-sizing: border-box;
+  background: radial-gradient(circle at top, #111 0%, #000 70%);
+  overflow: hidden;
+}
+
+/* GOLD BORDER */
+.pdf-page::before {
+  content: "";
+  position: absolute;
+  inset: 10mm;
+  border: 1.2px solid #b89b5e;
+  pointer-events: none;
+}
+
+/* SIGNATURE RAIN */
+.signature-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(184,155,94,.06) 0,
+      rgba(184,155,94,.06) 1px,
+      transparent 1px,
+      transparent 40px
+    );
+  z-index: 0;
+}
+
+/* SIGNATURE TEXT PATTERN */
+.signature-text {
+  position: absolute;
+  inset: 0;
+  font-size: 26px;
+  font-style: italic;
+  color: rgba(184,155,94,.08);
+  transform: rotate(-30deg);
+  line-height: 80px;
+  white-space: pre-wrap;
+  z-index: 0;
+}
+
+/* CONTENT */
+.pdf-content {
+  position: relative;
+  z-index: 2;
+}
+
+h1 {
+  text-align: center;
+  letter-spacing: 3px;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  opacity: .85;
+  margin-bottom: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+th, td {
+  border-bottom: 1px solid rgba(184,155,94,.3);
+  padding: 6px;
+}
+
+th {
+  color: #f1e3b0;
+  text-transform: uppercase;
+}
+
+.footer {
+  position: absolute;
+  bottom: 18mm;
+  left: 30mm;
+  right: 30mm;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  opacity: .7;
+}
+
+.gold-line {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #b89b5e, transparent);
+  margin: 20px 0;
+}
+
