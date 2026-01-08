@@ -2,7 +2,7 @@
   --bg:#f4f4f4;
   --card:#ffffff;
   --text:#222;
-  --accent:#b89b5e;
+  --gold:#b89b5e;
 }
 .dark{
   --bg:#0f0f0f;
@@ -24,17 +24,12 @@ body{
   background:var(--card);
   padding:25px;
   border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.15);
+  box-shadow:0 15px 40px rgba(0,0,0,.2);
 }
 
-h2{
-  text-align:center;
-  letter-spacing:2px;
-}
+h2{text-align:center;letter-spacing:2px}
 
-label{
-  font-size:13px;
-}
+label{font-size:13px}
 
 input,select{
   width:100%;
@@ -52,12 +47,7 @@ button{
   border-radius:10px;
   font-weight:bold;
   cursor:pointer;
-}
-
-button.link{
-  background:none;
-  color:#0077ff;
-  margin-bottom:10px;
+  margin-top:8px;
 }
 
 .toggle{
@@ -69,22 +59,18 @@ button.link{
 .card{
   margin-top:20px;
   padding:15px;
-  border-radius:10px;
   background:#fff;
+  border-radius:10px;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  font-size:13px;
+  font-size:12px;
 }
-
 th,td{
   padding:6px;
   border-bottom:1px solid #ddd;
   text-align:center;
 }
-
-canvas{
-  margin-top:25px;
-}
+canvas{margin-top:20px}
