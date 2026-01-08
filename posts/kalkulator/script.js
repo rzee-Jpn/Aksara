@@ -176,121 +176,54 @@ function hitung(){
    → SIGNATURE GOLD
 ===================== */
 
-function downloadPDF(){
-  if(!REPORT_DATA){
-    alert("Hitung simulasi terlebih dahulu");
-    return;
-  }
+function downloadPDF() {
+  const signature = "ANG L U M E A  •  PRIVATE INVESTMENT";
 
-  const d = REPORT_DATA;
+  const sigPattern = Array(30).fill(signature.repeat(3)).join("\n");
 
   const div = document.createElement("div");
-  div.style.background = "#0b0b0b";
-  div.style.color = "#eaeaea";
-  div.style.padding = "50px";
-  div.style.fontFamily = "Times New Roman, serif";
-
   div.innerHTML = `
-    <div style="text-align:center;margin-bottom:30px">
-      <div style="color:#b89b5e;letter-spacing:4px;font-size:13px">
-        CONFIDENTIAL INVESTMENT REPORT
-      </div>
-      <h1 style="margin:10px 0;color:#ffffff">
-        PRIVATE FINANCIAL PROJECTION
-      </h1>
-      <div style="color:#888;font-size:11px">
-        Generated for High-Net-Worth Investor
-      </div>
+  <div class="pdf-page">
+    <div class="signature-bg"></div>
+    <div class="signature-text">${sigPattern}</div>
+
+    <div class="pdf-content">
+      <h1>PRIVATE INVESTOR REPORT</h1>
+      <div class="subtitle">Confidential • High Net Worth Individual</div>
+
+      <div class="gold-line"></div>
+
+      <p><b>Client:</b> ${REPORT_DATA.nama}</p>
+      <p><b>Date:</b> ${new Date().toLocaleDateString("id-ID")}</p>
+
+      <div class="gold-line"></div>
+
+      ${REPORT_DATA.table}
+
+      <div class="gold-line"></div>
+
+      <img src="${REPORT_DATA.chart}" style="width:100%; margin-top:15px">
     </div>
 
-    <table width="100%" style="margin-bottom:30px">
-      <tr>
-        <td>
-          <span style="color:#b89b5e">Client</span><br>${d.nama}
-        </td>
-        <td align="right">
-          <span style="color:#b89b5e">Date</span><br>${d.tanggal}
-        </td>
-      </tr>
-    </table>
-
-    <table width="100%" cellpadding="14" style="
-      border:1px solid #b89b5e;
-      margin-bottom:35px;
-      color:#eaeaea
-    ">
-      <tr>
-        <td>
-          Loan Principal<br>
-          <b>Rp ${rp(d.totalPokok)}</b>
-        </td>
-        <td>
-          Monthly Installment<br>
-          <b>Rp ${rp(d.cicilan)}</b>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Total Interest<br>
-          <b style="color:#b89b5e">
-            Rp ${rp(d.totalBunga)}
-          </b>
-        </td>
-        <td>
-          Total Payment<br>
-          <b>Rp ${rp(d.totalBayar)}</b>
-        </td>
-      </tr>
-    </table>
-
-    <h3 style="color:#b89b5e;letter-spacing:2px">
-      PAYMENT SCHEDULE
-    </h3>
-
-    ${d.table.replace(
-      "<table>",
-      "<table style='width:100%;border-collapse:collapse;color:#eaeaea'>"
-    ).replaceAll(
-      "<td>",
-      "<td style='border-bottom:1px solid #333;padding:6px;text-align:center'>"
-    ).replaceAll(
-      "<th>",
-      "<th style='border-bottom:1px solid #b89b5e;padding:6px;text-align:center;color:#b89b5e'>"
-    )}
-
-    <div style="page-break-before:always"></div>
-
-    <h3 style="text-align:center;color:#b89b5e">
-      PAYMENT PROJECTION
-    </h3>
-    <img src="${d.chart}" style="width:100%;margin-top:20px">
-
-    <div style="margin-top:70px">
-      <div style="color:#b89b5e;font-size:12px;letter-spacing:2px">
-        SIGNED & AUTHORIZED BY
-      </div>
-      <div style="font-size:22px;margin-top:5px">
-        ANGLUMEA
-      </div>
-      <div style="font-size:11px;color:#aaa">
-        Financial Strategy & Investment Intelligence
-      </div>
+    <div class="footer">
+      <div>ANG L U M E A™</div>
+      <div>Authorized Signature</div>
     </div>
-
-    <p style="
-      font-size:9px;
-      color:#777;
-      margin-top:40px;
-      text-align:center
-    ">
-      This report is a financial simulation only and does not constitute
-      an offer or financial advice.
-    </p>
+  </div>
   `;
 
   html2pdf().from(div).set({
-    filename:`Anglumea_Private_Report_${d.nama}.pdf`,
-    html2canvas:{scale:2},
-    jsPDF:{format:"a4",orientation:"portrait"}
+    margin: 0,
+    filename: "Anglumea_Investor_Report.pdf",
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#000"
+    },
+    jsPDF: {
+      unit: "mm",
+      format: "a4",
+      orientation: "portrait"
+    }
   }).save();
 }
