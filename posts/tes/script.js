@@ -165,183 +165,109 @@ function hitung() {
   $("downloadBtn").classList.remove("hidden");
 }
 
-/* ================= PDF EXPORT ================= */
+/* ================== PDF FIX ================= */
 function downloadPDF() {
-  if (!REPORT) {
-    alert("Generate calculation first.");
-    return;
-  }
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF("p", "mm", "a4");
 
   const d = REPORT;
-  const root = document.getElementById("pdf-root");
+  const pageW = 210;
+  const pageH = 297;
+  const margin = 15;
+  let y = margin;
 
-  const rp = n => Number(n).toLocaleString("id-ID");
+  const gold = [184, 155, 94];
+  const rupiah = n => "Rp " + rp(n);
 
-  root.innerHTML = `
-  <div style="
-    font-family: 'Times New Roman', serif;
-    color:#111;
-    padding:22mm;
-    line-height:1.5;
-  ">
+  /* ================= COVER ================= */
+  pdf.setFont("times", "bold");
+  pdf.setFontSize(10);
+  pdf.setTextColor(...gold);
+  pdf.text("CONFIDENTIAL INVESTMENT REPORT", pageW / 2, y, { align: "center" });
 
-  <!-- PAGE 1 -->
-  <section style="page-break-after:always">
+  y += 8;
+  pdf.setFontSize(18);
+  pdf.setTextColor(0);
+  pdf.text("PRIVATE FINANCIAL PROJECTION", pageW / 2, y, { align: "center" });
 
-    <div style="text-align:center;margin-bottom:32px">
-      <div style="
-        color:#b89b5e;
-        letter-spacing:4px;
-        font-size:10px;
-        margin-bottom:6px">
-        CONFIDENTIAL INVESTMENT REPORT
-      </div>
+  y += 18;
+  pdf.setFontSize(11);
+  pdf.text("Client", margin, y);
+  pdf.text(d.nama, margin, y + 6);
 
-      <h1 style="
-        font-size:22px;
-        margin:0">
-        PRIVATE FINANCIAL PROJECTION
-      </h1>
+  pdf.text("Date", pageW - margin, y, { align: "right" });
+  pdf.text(d.tanggal, pageW - margin, y + 6, { align: "right" });
 
-      <div style="
-        font-size:10px;
-        color:#777;
-        margin-top:6px">
-        For Sophisticated Investors Only
-      </div>
-    </div>
+  y += 18;
+  pdf.setDrawColor(...gold);
+  pdf.rect(margin, y, pageW - margin * 2, 32);
 
-    <table width="100%" style="margin-bottom:28px">
-      <tr>
-        <td>
-          <b>Client</b><br>
-          ${d.nama}
-        </td>
-        <td align="right">
-          <b>Date</b><br>
-          ${d.tanggal}
-        </td>
-      </tr>
-    </table>
+  pdf.text("Loan Principal", margin + 5, y + 8);
+  pdf.text(rupiah(d.pinjaman), margin + 5, y + 16);
 
-    <table width="100%" cellpadding="14" style="
-      border:1px solid #b89b5e;
-      border-collapse:collapse;
-      margin-bottom:36px;
-      page-break-inside:avoid">
+  pdf.text("Monthly Installment", pageW / 2 + 5, y + 8);
+  pdf.text(rupiah(d.cicilan), pageW / 2 + 5, y + 16);
 
-      <tr>
-        <td>
-          Loan Principal<br>
-          <b>Rp ${rp(d.pinjaman)}</b>
-        </td>
-        <td>
-          Monthly Installment<br>
-          <b>Rp ${rp(d.cicilan)}</b>
-        </td>
-      </tr>
+  pdf.text("Total Interest", margin + 5, y + 24);
+  pdf.text(rupiah(d.totalBunga), margin + 5, y + 32);
 
-      <tr>
-        <td>
-          Total Interest<br>
-          <b style="color:#b89b5e">
-            Rp ${rp(d.totalBunga)}
-          </b>
-        </td>
-        <td>
-          Total Payment<br>
-          <b>Rp ${rp(d.totalBayar)}</b>
-        </td>
-      </tr>
-    </table>
+  pdf.text("Total Payment", pageW / 2 + 5, y + 24);
+  pdf.text(rupiah(d.totalBayar), pageW / 2 + 5, y + 32);
 
-  </section>
+  /* ================= TABLE ================= */
+  pdf.addPage();
+  pdf.setFontSize(13);
+  pdf.setTextColor(...gold);
+  pdf.text("PAYMENT SCHEDULE", pageW / 2, margin, { align: "center" });
 
-  <!-- PAGE 2+ -->
-  <section style="page-break-after:always">
-
-    <h3 style="
-      color:#b89b5e;
-      letter-spacing:3px;
-      margin-bottom:16px">
-      PAYMENT SCHEDULE
-    </h3>
-
-    <div style="page-break-inside:auto">
-      ${d.rows}
-    </div>
-
-  </section>
-
-  <!-- LAST PAGE -->
-  <section>
-
-    <h3 style="
-      text-align:center;
-      color:#b89b5e;
-      letter-spacing:3px">
-      PAYMENT PROJECTION
-    </h3>
-
-    <img src="${d.chart}" style="
-      width:100%;
-      margin-top:20px;
-      page-break-inside:avoid">
-
-    <div style="
-      margin-top:70px;
-      page-break-inside:avoid">
-
-      <div style="
-        color:#b89b5e;
-        font-size:10px;
-        letter-spacing:3px">
-        SIGNED & AUTHORIZED
-      </div>
-
-      <div style="
-        font-size:22px;
-        margin-top:6px">
-        ANGLUMEA
-      </div>
-
-      <div style="
-        font-size:10px;
-        color:#777">
-        Financial Strategy & Investment Intelligence
-      </div>
-
-    </div>
-
-    <p style="
-      font-size:9px;
-      color:#777;
-      margin-top:36px;
-      text-align:center">
-      This report is a financial simulation only and does not constitute
-      investment advice.
-    </p>
-
-  </section>
-
-  </div>
-  `;
-
-  html2pdf().from(root).set({
-    filename: `Anglumea_Private_Report_${d.nama.replace(/[^\w]/g,"")}.pdf`,
-    margin: 0,
-    html2canvas: {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true
+  pdf.autoTable({
+    startY: margin + 8,
+    head: [["Bulan", "Cicilan", "Sisa Pinjaman"]],
+    body: d.rowsData.map(r => [
+      r.bulan,
+      rupiah(r.cicilan),
+      rupiah(r.sisa)
+    ]),
+    styles: {
+      font: "times",
+      fontSize: 9,
+      cellPadding: 3
     },
-    jsPDF: {
-      unit: "mm",
-      format: "a4",
-      orientation: "portrait"
+    headStyles: {
+      fillColor: gold,
+      textColor: 255,
+      halign: "center"
     },
-    pagebreak: {
-      mode: ["css", "avoid-all"]
+    bodyStyles: {
+      halign: "center"
+    },
+    margin: { left: margin, right: margin },
+    didDrawPage: () => {
+      pdf.setFontSize(9);
+      pdf.setTextColor(150);
+      pdf.text(
+        "PRIVATE INVESTMENT DOCUMENT",
+        pageW / 2,
+        pageH - 8,
+        { align: "center" }
+      );
     }
-  }).save();
+  });
+
+  /* ================= CHART ================= */
+  pdf.addPage();
+  pdf.setFontSize(13);
+  pdf.setTextColor(...gold);
+  pdf.text("PAYMENT PROJECTION", pageW / 2, margin, { align: "center" });
+
+  pdf.addImage(
+    d.chart,
+    "PNG",
+    margin,
+    margin + 10,
+    pageW - margin * 2,
+    100
+  );
+
+  pdf.save(`Investor_Report_${d.nama}.pdf`);
 }
