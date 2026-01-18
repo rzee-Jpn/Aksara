@@ -152,17 +152,21 @@ function downloadPDF() {
   const margin = 18;
   let y = margin;
 
+  const black = [10, 10, 12];
   const gold = [184, 155, 94];
-  const dark = [15, 15, 17];
-  const gray = [160, 160, 160];
+  const white = [245, 245, 247];
+  const gray = [140, 140, 145];
 
   const rupiah = n => "Rp " + formatIDR(n);
 
-  /* ================= BACKGROUND ================= */
-  pdf.setFillColor(...dark);
-  pdf.rect(0, 0, pageW, pageH, "F");
+  const paintBg = () => {
+    pdf.setFillColor(...black);
+    pdf.rect(0, 0, pageW, pageH, "F");
+  };
 
-  /* ================= HEADER ================= */
+  /* ================= PAGE 1 ================= */
+  paintBg();
+
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
   pdf.setTextColor(...gold);
@@ -177,49 +181,49 @@ function downloadPDF() {
   pdf.setTextColor(...gray);
   pdf.text("For Sophisticated Investors Only", pageW / 2, y, { align: "center" });
 
-  /* ================= CLIENT INFO ================= */
+  /* CLIENT INFO */
   y += 20;
-  pdf.setTextColor(255);
   pdf.setFontSize(10);
+  pdf.setTextColor(...gray);
   pdf.text("Client", margin, y);
   pdf.text("Date", pageW - margin, y, { align: "right" });
 
   y += 6;
   pdf.setFont("helvetica", "bold");
+  pdf.setTextColor(...white);
   pdf.text(d.nama, margin, y);
   pdf.setFont("helvetica", "normal");
   pdf.text(d.tanggal, pageW - margin, y, { align: "right" });
 
-  /* ================= SUMMARY BOX ================= */
+  /* SUMMARY BOX */
   y += 14;
   pdf.setDrawColor(...gold);
-  pdf.rect(margin, y, pageW - margin * 2, 40);
+  pdf.rect(margin, y, pageW - margin * 2, 42);
 
   pdf.setFontSize(10);
-  pdf.setTextColor(...gold);
+  pdf.setTextColor(...gray);
 
   pdf.text("Loan Principal", margin + 6, y + 10);
   pdf.text("Monthly Installment", pageW / 2 + 6, y + 10);
 
   pdf.setFont("helvetica", "bold");
-  pdf.setTextColor(255);
+  pdf.setTextColor(...white);
   pdf.text(rupiah(d.pinjaman), margin + 6, y + 18);
   pdf.text(rupiah(d.cicilan), pageW / 2 + 6, y + 18);
 
   pdf.setFont("helvetica", "normal");
-  pdf.setTextColor(...gold);
+  pdf.setTextColor(...gray);
   pdf.text("Total Interest", margin + 6, y + 30);
   pdf.text("Total Payment", pageW / 2 + 6, y + 30);
 
   pdf.setFont("helvetica", "bold");
-  pdf.setTextColor(255);
+  pdf.setTextColor(...white);
   pdf.text(rupiah(d.totalBunga), margin + 6, y + 38);
   pdf.text(rupiah(d.totalBayar), pageW / 2 + 6, y + 38);
 
-  /* ================= TABLE PAGE ================= */
+  /* ================= PAGE 2 — TABLE ================= */
   pdf.addPage();
-  pdf.setFillColor(...dark);
-  pdf.rect(0, 0, pageW, pageH, "F");
+  paintBg();
 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(13);
@@ -227,31 +231,30 @@ function downloadPDF() {
   pdf.text("PAYMENT SCHEDULE", pageW / 2, margin, { align: "center" });
 
   pdf.autoTable({
-    startY: margin + 10,
+    startY: margin + 12,
     head: [["Month", "Installment", "Remaining"]],
     body: d.rowsData.map(r => [
       r.bulan,
       rupiah(r.cicilan),
       rupiah(r.sisa)
     ]),
-    theme: "grid",
+    theme: "plain",
     styles: {
       font: "helvetica",
       fontSize: 9,
-      textColor: 255,
+      textColor: white,
       cellPadding: 4,
-      lineColor: gold
+      lineWidth: 0.3,
+      lineColor: gold,
+      fillColor: black
     },
     headStyles: {
-      fillColor: gold,
-      textColor: 0,
+      textColor: gold,
+      fontStyle: "bold",
       halign: "center"
     },
     bodyStyles: {
       halign: "center"
-    },
-    alternateRowStyles: {
-      fillColor: [20, 20, 22]
     },
     margin: { left: margin, right: margin },
     didDrawPage: () => {
@@ -266,10 +269,9 @@ function downloadPDF() {
     }
   });
 
-  /* ================= CHART PAGE ================= */
+  /* ================= PAGE 3 — CHART ================= */
   pdf.addPage();
-  pdf.setFillColor(...dark);
-  pdf.rect(0, 0, pageW, pageH, "F");
+  paintBg();
 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(13);
@@ -280,10 +282,10 @@ function downloadPDF() {
     d.chartImage,
     "PNG",
     margin,
-    margin + 12,
+    margin + 14,
     pageW - margin * 2,
     90
   );
 
-  pdf.save(`Private_Investment_Report_${d.nama}.pdf`);
+  pdf.save(`Anglumea_Loan_Calc_${d.nama}.pdf`);
 }
