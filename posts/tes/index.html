@@ -6,20 +6,16 @@
 
 <title>Kalkulator Cicilan – Investor OS</title>
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#b89b5e">
-
 <link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#b89b5e">
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- jsPDF CORE (WAJIB) -->
+<!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- autoTable HARUS SETELAH jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-
 </head>
+
 <body>
 
 <div class="app">
@@ -33,7 +29,7 @@
   <h3>Client Information</h3>
 
   <label>Nama Klien</label>
-  <input id="namaUser" placeholder="Investor Name">
+  <input id="namaUser">
 
   <label>Harga Aset</label>
   <input id="harga" inputmode="numeric">
@@ -89,16 +85,5 @@
 </div>
 
 <script src="script.js"></script>
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js");
-  });
-}
-</script>
-
-<div id="pdf-root"></div>
-
 </body>
 </html>
