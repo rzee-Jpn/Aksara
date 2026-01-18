@@ -167,55 +167,108 @@ function hitung() {
 
 /* ================= PDF EXPORT ================= */
 function downloadPDF() {
-  if (!REPORT) {
-    alert("Please generate calculation first.");
-    return;
-  }
-
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF("p", "mm", "a4");
 
-  const W = 210;
-  const H = 297;
-  const M = 18;
-  let y = M;
-
   const d = REPORT;
-  const rupiah = n => "Rp " + formatIDR(n);
+  const pageW = 210;
+  const pageH = 297;
+  const margin = 15;
+  let y = margin;
 
+  const gold = [184, 155, 94];
+  const rupiah = n => "Rp " + rp(n);
+
+  /* ================= COVER ================= */
   pdf.setFont("times", "bold");
-  pdf.setFontSize(11);
-  pdf.text("INVESTOR OS — EXECUTIVE FINANCIAL PROJECTION", W / 2, y, { align: "center" });
+  pdf.setFontSize(10);
+  pdf.setTextColor(...gold);
+  pdf.text("CONFIDENTIAL INVESTMENT REPORT", pageW / 2, y, { align: "center" });
 
   y += 8;
-  pdf.setFont("times", "normal");
-  pdf.setFontSize(10);
+  pdf.setFontSize(18);
+  pdf.setTextColor(0);
+  pdf.text("PRIVATE FINANCIAL PROJECTION", pageW / 2, y, { align: "center" });
 
-  pdf.text(`Subject: ${d.nama}`, M, y);
-  pdf.text(`Date: ${d.tanggal}`, W - M, y, { align: "right" });
+  y += 18;
+  pdf.setFontSize(11);
+  pdf.text("Client", margin, y);
+  pdf.text(d.nama, margin, y + 6);
 
-  y += 10;
+  pdf.text("Date", pageW - margin, y, { align: "right" });
+  pdf.text(d.tanggal, pageW - margin, y + 6, { align: "right" });
 
-  pdf.setFont("times", "bold");
-  pdf.text("KEY METRICS", M, y);
-  y += 6;
+  y += 18;
+  pdf.setDrawColor(...gold);
+  pdf.rect(margin, y, pageW - margin * 2, 32);
 
-  pdf.setFont("times", "normal");
-  [
-    ["Loan Principal", rupiah(d.pinjaman)],
-    ["Monthly Payment", rupiah(d.cicilan)],
-    ["Total Interest", rupiah(d.totalBunga)],
-    ["Total Payment", rupiah(d.totalBayar)]
-  ].forEach(m => {
-    pdf.text(`${m[0]}: ${m[1]}`, M, y);
-    y += 6;
+  pdf.text("Loan Principal", margin + 5, y + 8);
+  pdf.text(rupiah(d.pinjaman), margin + 5, y + 16);
+
+  pdf.text("Monthly Installment", pageW / 2 + 5, y + 8);
+  pdf.text(rupiah(d.cicilan), pageW / 2 + 5, y + 16);
+
+  pdf.text("Total Interest", margin + 5, y + 24);
+  pdf.text(rupiah(d.totalBunga), margin + 5, y + 32);
+
+  pdf.text("Total Payment", pageW / 2 + 5, y + 24);
+  pdf.text(rupiah(d.totalBayar), pageW / 2 + 5, y + 32);
+
+  /* ================= TABLE ================= */
+  pdf.addPage();
+  pdf.setFontSize(13);
+  pdf.setTextColor(...gold);
+  pdf.text("PAYMENT SCHEDULE", pageW / 2, margin, { align: "center" });
+
+  pdf.autoTable({
+    startY: margin + 8,
+    head: [["Bulan", "Cicilan", "Sisa Pinjaman"]],
+    body: d.rowsData.map(r => [
+      r.bulan,
+      rupiah(r.cicilan),
+      rupiah(r.sisa)
+    ]),
+    styles: {
+      font: "times",
+      fontSize: 9,
+      cellPadding: 3
+    },
+    headStyles: {
+      fillColor: gold,
+      textColor: 255,
+      halign: "center"
+    },
+    bodyStyles: {
+      halign: "center"
+    },
+    margin: { left: margin, right: margin },
+    didDrawPage: () => {
+      pdf.setFontSize(9);
+      pdf.setTextColor(150);
+      pdf.text(
+        "PRIVATE INVESTMENT DOCUMENT",
+        pageW / 2,
+        pageH - 8,
+        { align: "center" }
+      );
+    }
   });
 
-  y += 4;
+  /* ================= CHART ================= */
+  pdf.addPage();
+  pdf.setFontSize(13);
+  pdf.setTextColor(...gold);
+  pdf.text("PAYMENT PROJECTION", pageW / 2, margin, { align: "center" });
 
-  if (d.chartImage) {
-    pdf.addImage(d.chartImage, "PNG", M, y, W - M * 2, 50);
-  }
+  pdf.addImage(
+    d.chart,
+    "PNG",
+    margin,
+    margin + 10,
+    pageW - margin * 2,
+    100
+  );
 
-  pdf.save(`InvestorOS_Executive_${d.nama.replace(/[^\w]/g, "")}.pdf`);
+  pdf.save(`Investor_Report_${d.nama}.pdf`);
 }
+
