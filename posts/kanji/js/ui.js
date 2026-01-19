@@ -25,15 +25,33 @@ const UI = {
   },
 
   grid(data) {
-    this.screen.innerHTML = `
-      <div class="grid">
-        ${data.map(x => `
-          <div class="char" onclick="App.speak('${x.c}')">
-            ${x.c}
-            <small>${x.a || x.r || ""}</small>
-          </div>
-        `).join("")}
+  this.screen.innerHTML = `
+    <div class="grid">
+      ${data.map(x => `
+        <div class="char" onclick="UI.showChar('${x.c}','${x.r || x.a || ""}')">
+          ${x.c}
+          <small>${x.r || x.a || ""}</small>
+        </div>
+      `).join("")}
+    </div>
+  `;
+},
+
+
+showChar(char, reading) {
+  this.screen.innerHTML = `
+    <div class="card detail">
+      <div class="big-char">${char}</div>
+      <div class="reading">${reading}</div>
+
+      <div class="actions">
+        <button onclick="App.speak('${char}')">🔊 Dengarkan</button>
+        <button onclick="Practice.draw('${char}')">✍️ Latihan Tulis</button>
       </div>
-    `;
-  }
+
+      <button class="back" onclick="UI.showMenu()">← Kembali</button>
+    </div>
+  `;
+}
 };
+
