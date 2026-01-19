@@ -1,0 +1,98 @@
+body {
+  margin:0;
+  background:#020617;
+  color:#e5e7eb;
+  font-family:system-ui;
+}
+
+header {
+  text-align:center;
+  padding:15px;
+}
+
+.menu {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+  padding:15px;
+}
+
+.card {
+  border:1px solid #1e293b;
+  border-radius:14px;
+  padding:30px 10px;
+  text-align:center;
+  font-size:1.5rem;
+}
+
+.grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  padding:15px;
+}
+
+.char {
+  border:1px solid #1e293b;
+  border-radius:12px;
+  padding:18px 0;
+  text-align:center;
+  font-size:1.6rem;
+}
+
+nav {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  border-top:1px solid #1e293b;
+  background:#020617;
+}
+
+nav button {
+  flex:1;
+  background:none;
+  color:#e5e7eb;
+  border:none;
+  padding:12px;
+  font-size:1.2rem;
+}
+
+
+
+.quiz {
+  padding: 20px;
+  text-align: center;
+}
+
+.quiz-char {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.quiz-options button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 14px;
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: #e5e7eb;
+  transition: 0.2s;
+}
+
+.quiz-options button.correct {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+
+.quiz-options button.wrong {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+#quiz-feedback {
+  margin-top: 12px;
+  font-size: 1rem;
+}
