@@ -1,89 +1,131 @@
+import { latinToJawa } from './engine/latin-to-jawa.js';
+import { jawaToLatin } from './engine/jawa-to-latin.js';
+
+/* ===================== */
+/* CORE ELEMENTS */
+/* ===================== */
+
 const input = document.getElementById('input');
 const output = document.getElementById('output');
-const copyBtn = document.getElementById('copyBtn');
-const swapBtn = document.getElementById('swapBtn');
 const murdaToggle = document.getElementById('murdaToggle');
+const swapBtn = document.getElementById('swapBtn');
 const modeLabel = document.getElementById('modeLabel');
+const copyBtn = document.getElementById('copyBtn');
 
-// false = Latin → Jawa
-// true  = Jawa → Latin
-let reverse = false;
+/* ===================== */
+/* MODE STATE */
+/* ===================== */
 
-function setModeUI(){
-  if(reverse){
-    modeLabel.textContent = 'Aksara Jawa → Latin';
-    input.placeholder = 'Contoh: ꦄꦤ꧀ꦏ꧀ ꦭꦤꦁ ꦩꦔꦤ꧀';
-    murdaToggle.disabled = true;
-  } else {
-    modeLabel.textContent = 'Latin → Aksara Jawa';
-    input.placeholder = 'Contoh: anak lanang mangan tahu';
-    murdaToggle.disabled = false;
+let mode = 'latin-jawa';
+
+/* ===================== */
+/* RENDER */
+/* ===================== */
+
+function render() {
+  const value = input.value;
+
+  output.textContent =
+    mode === 'latin-jawa'
+      ? latinToJawa(value, murdaToggle.checked)
+      : jawaToLatin(value);
+}
+
+/* ===================== */
+/* MODE SWITCH */
+/* ===================== */
+
+swapBtn.onclick = () => {
+  mode = mode === 'latin-jawa' ? 'jawa-latin' : 'latin-jawa';
+
+  modeLabel.textContent =
+    mode === 'latin-jawa'
+      ? 'Latin → Aksara Jawa'
+      : 'Aksara Jawa → Latin';
+
+  input.value = output.textContent;
+  render();
+};
+
+/* ===================== */
+/* COPY */
+/* ===================== */
+
+copyBtn.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(output.textContent);
+  } catch (e) {
+    console.warn('Clipboard gagal:', e);
   }
-}
+};
 
-function render(){
-  const text = input.value || '';
-  output.textContent = reverse
-    ? jawaToLatin(text)
-    : latinToJawa(text);
-}
+/* ===================== */
+/* INPUT EVENTS */
+/* ===================== */
 
-// INPUT
 input.addEventListener('input', render);
+murdaToggle.addEventListener('change', render);
 
-// MURDA
-murdaToggle.addEventListener('change', e=>{
-  USE_MURDA = !!e.target.checked;
-  render();
-});
+/* ===================== */
+/* INITIAL RENDER */
+/* ===================== */
 
-// SWAP
-swapBtn.addEventListener('click', ()=>{
-  input.value = output.textContent || '';
-  output.textContent = '';
-  reverse = !reverse;
-  setModeUI();
-  render();
-});
-
-// COPY
-copyBtn.addEventListener('click', async ()=>{
-  await navigator.clipboard.writeText(output.textContent || '');
-  const prev = copyBtn.textContent;
-  copyBtn.textContent = 'Tersalin ✓';
-  setTimeout(()=>copyBtn.textContent = prev, 1200);
-});
-
-// INIT
-setModeUI();
 render();
 
-
-
-function toggleDrawer(){
-  document
-    .getElementById('bottomDrawer')
-    .classList.toggle('open');
-}
-
-function shareTool(){
-  if(navigator.share){
-    navigator.share({
-      title:'Generator Aksara Jawa',
-      text:'Coba Generator Aksara Jawa',
-      url:location.href
-    });
-  } else {
-    alert(location.href);
-  }
-}
-
-function openAnotherTools(){
-  window.open('https://anglumea.github.io/tools','_blank');
-}
-function openSocial(){
-  window.open('https://instagram.com/anglumea','_blank');
-}
-function openDonate(){
-  window.open('https://trakteer.id/anglumea','_blank');
-}
+/* ===================== */  
+/* DONATE MODAL */  
+/* ===================== */  
+  
+const donateBtn = document.getElementById('donateBtn');  
+const donateModal = document.getElementById('donateModal');  
+const closeDonate = document.getElementById('closeDonate');  
+const btcBtn = document.getElementById('btcBtn');  
+const btcAddress = document.getElementById('btcAddress');  
+  
+donateBtn.onclick = () => donateModal.classList.remove('hidden');  
+closeDonate.onclick = () => donateModal.classList.add('hidden');  
+  
+donateModal.onclick = e => {  
+  if (e.target === donateModal)  
+    donateModal.classList.add('hidden');  
+};  
+  
+btcBtn.onclick = () => {  
+  navigator.clipboard.writeText(btcAddress.textContent);  
+  btcBtn.innerHTML = '✔ Bitcoin address copied';  
+};  
+  
+const drawer = document.getElementById('bottomDrawer');  
+const handle = document.getElementById('drawerHandle');  
+  
+handle.onclick = () => drawer.classList.toggle('open');  
+  
+/* ===================== */  
+/* ABOUT & SHARE MODAL */  
+/* ===================== */  
+  
+const aboutBtn = document.getElementById('aboutBtn');  
+const aboutModal = document.getElementById('aboutModal');  
+  
+const shareBtn = document.getElementById('shareBtn');  
+const shareModal = document.getElementById('shareModal');  
+  
+/* OPEN */  
+aboutBtn.onclick = () => aboutModal.classList.remove('hidden');  
+shareBtn.onclick = () => shareModal.classList.remove('hidden');  
+  
+/* CLOSE (SEMUA BUTTON TUTUP) */  
+document.querySelectorAll('.closeBtn').forEach(btn=>{  
+  btn.onclick = () => {  
+    aboutModal.classList.add('hidden');  
+    shareModal.classList.add('hidden');  
+  };  
+});  
+  
+/* CLICK OUTSIDE TO CLOSE */  
+[aboutModal, shareModal].forEach(modal=>{  
+  modal.onclick = e => {  
+    if (e.target === modal)  
+      modal.classList.add('hidden');  
+  };  
+});  
