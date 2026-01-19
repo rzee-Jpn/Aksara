@@ -22,105 +22,93 @@ export function latinToJawa(text, useMurda = true){
 }  
   
 function wordToJawa(word, useMurda){
-  if (!word) return '';   // 🔥 FIX UTAMA
+  if (!word) return '';
 
-  const rawWord = word;
+  const raw = word;
   word = word.toLowerCase();
 
-  const isCapitalized =
-    rawWord[0] === rawWord[0].toUpperCase();
-
   let out = '';
+  let buffer = null; // simpan konsonan nunggu keputusan
   let i = 0;
-  let prevConsonant = false;
+
+  const flushDead = () => {
+  if (!buffer) return;
+
+  if (buffer === AKSARA.r) {
+    out += PANYIGEG.r;     // layar
+  } else if (buffer === AKSARA.h) {
+    out += PANYIGEG.h;     // wignyan
+  } else if (buffer === AKSARA.ng) {
+    out += PANYIGEG.ng;    // cecak
+  } else {
+    out += buffer + PANGKON;
+  }
+
+  buffer = null;
+};
 
   while (i < word.length){
     const two = word.slice(i,i+2);
     const one = word[i];
     const next = word[i+1];
 
-    /* ================= NG ================= */
+    /* === NG === */
     if (two === 'ng'){
-      const after = word[i+2];
-
-      if (NG_CECAK_BEFORE.includes(after)){
+      flushDead();
+      if (VOWELS.includes(word[i+2])){
+        out += AKSARA.ng;
+        if (word[i+2] !== 'a') out += SANDHANGAN[word[i+2]];
+        i += 3;
+      } else {
         out += PANYIGEG.ng;
         i += 2;
-        prevConsonant = false;
-        continue;
       }
-
-      if (VOWELS.includes(after)){
-        out += AKSARA.ng;
-        if (after !== 'a') out += SANDHANGAN[after];
-        i += 3;
-        prevConsonant = false;
-        continue;
-      }
-
-      out += PANYIGEG.ng;
-      i += 2;
-      prevConsonant = false;
       continue;
     }
 
-    /* ================= DIGRAF ================= */
+    /* === DIGRAF === */
     if (DIGRAF.includes(two)){
-      if (prevConsonant) out += PANGKON;
-
-      out += AKSARA[two];
-
-      if (VOWELS.includes(word[i+2])){
-        if (word[i+2] !== 'a')
-          out += SANDHANGAN[word[i+2]];
-        i += 3;
-        prevConsonant = false;
-      } else {
-        i += 2;
-        prevConsonant = true;
-      }
+      flushDead();
+      buffer = AKSARA[two];
+      i += 2;
       continue;
     }
 
-    /* ================= KONSONAN ================= */
+    /* === KONSONAN === */
     if (AKSARA[one]){
-      if (prevConsonant) out += PANGKON;
+      flushDead();
 
-      out += (
+      buffer =
         useMurda &&
         i === 0 &&
-        isCapitalized &&
+        raw[0] === raw[0].toUpperCase() &&
         MURDA[one]
-      )
-        ? MURDA[one]
-        : AKSARA[one];
+          ? MURDA[one]
+          : AKSARA[one];
 
-      if (VOWELS.includes(next)){
-        if (next !== 'a')
-          out += SANDHANGAN[next];
-        i += 2;
-        prevConsonant = false;
-      } else {
-        i++;
-        prevConsonant = true;
-      }
-      continue;
-    }
-
-    /* ================= VOKAL LEPAS ================= */
-    if (VOWELS.includes(one)){
-      out += SWARA[one];
       i++;
-      prevConsonant = false;
       continue;
     }
 
-    /* ================= KARAKTER LAIN ================= */
+    /* === VOKAL === */
+    if (VOWELS.includes(one)){
+      if (buffer){
+        out += buffer;
+        if (one !== 'a') out += SANDHANGAN[one];
+        buffer = null;
+      } else {
+        out += SWARA[one];
+      }
+      i++;
+      continue;
+    }
+
+    /* === KARAKTER LAIN === */
+    flushDead();
     out += one;
     i++;
-    prevConsonant = false;
   }
 
-  if (prevConsonant) out += PANGKON;
+  flushDead();
   return out;
 }
