@@ -22,7 +22,9 @@ export function latinToJawa(text, useMurda = true){
 }  
   
 function wordToJawa(word, useMurda){
-  const rawWord = word;               // simpan bentuk asli
+  if (!word) return '';   // 🔥 FIX UTAMA
+
+  const rawWord = word;
   word = word.toLowerCase();
 
   const isCapitalized =
