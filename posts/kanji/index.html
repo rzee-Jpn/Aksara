@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japanese Script Trainer</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<header>
+  <h1>Japanese Trainer</h1>
+  <p>Hiragana • Katakana • Kanji JLPT N5–N1</p>
+</header>
+
+<main id="screen"></main>
+
+<nav>
+  <button onclick="UI.showMenu()">🏠</button>
+  <button onclick="Select.quiz()">🧪</button>
+</nav>
+
+<!-- DATA -->
+<script src="data/hiragana.js"></script>
+<script src="data/katakana.js"></script>
+<script src="data/kanji/N5.js"></script>
+<script src="data/kanji/N4.js"></script>
+<script src="data/kanji/N3.js"></script>
+<script src="data/kanji/N2.js"></script>
+<script src="data/kanji/N1.js"></script>
+
+<!-- LOGIC -->
+<script src="js/app.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/select.js"></script>
+<script src="js/quiz.js"></script>
+</body>
+</html>
