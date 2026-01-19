@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pension Calculator – Investor Grade</title>
+
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+<header class="topbar">
+  <h1>Pension Calculator</h1>
+  <p>Investor · Executive · Private</p>
+</header>
+
+<section class="card">
+  <h3>Profil</h3>
+
+  <label>Usia Sekarang</label>
+  <input id="ageNow" type="number" value="23">
+
+  <label>Usia Pensiun</label>
+  <input id="ageRetire" type="number" value="50">
+
+  <label>Usia Akhir Hidup</label>
+  <input id="ageEnd" type="number" value="85">
+
+  <label>Pengeluaran Bulanan Saat Ini (Rp)</label>
+  <input id="expense" inputmode="numeric" value="4000000">
+
+  <label>Inflasi (% / tahun)</label>
+  <input id="inflation" type="number" value="4">
+</section>
+
+<section class="card">
+  <h3>Strategi Investasi</h3>
+
+  <label>Dana Awal (Rp)</label>
+  <input id="initial" inputmode="numeric" value="2000000">
+
+  <label>Investasi Bulanan (Rp)</label>
+  <input id="monthly" inputmode="numeric" value="1000000">
+
+  <label>Return Saat Kerja (% / tahun)</label>
+  <input id="returnWork" type="number" value="8">
+
+  <label>Return Saat Pensiun (% / tahun)</label>
+  <input id="returnRetire" type="number" value="5">
+
+  <button onclick="calculate()">Analisis Dana Pen
+  
+</section>
+
+<section id="result" class="card hidden"></section>
+
+<section class="card">
+  <canvas id="chart"></canvas>
+</section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
