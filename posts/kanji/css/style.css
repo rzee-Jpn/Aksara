@@ -96,3 +96,122 @@ nav button {
   margin-top: 12px;
   font-size: 1rem;
 }
+
+
+/* ===== DRAW SCREEN ===== */
+
+.draw-wrap {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.draw-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+.draw-head {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.jp-char {
+  display: block;
+  font-size: 96px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.hint {
+  font-size: 14px;
+  color: #777;
+}
+
+canvas {
+  display: block;
+  margin: 16px auto;
+  background: #fafafa;
+  border-radius: 18px;
+  border: 2px solid #eee;
+  touch-action: none; /* WAJIB */
+}
+
+.draw-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+button {
+  padding: 14px;
+  font-size: 15px;
+  border-radius: 14px;
+  border: none;
+  background: #eee;
+}
+
+button.primary {
+  background: #111;
+  color: #fff;
+}
+
+
+/* ===== TYPING QUIZ ===== */
+
+.quiz.typing {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
+}
+
+.typing-char {
+  font-size: 96px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.typing-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+  background: #f2f2f4;
+  border-radius: 999px;
+  padding: 6px 8px 6px 16px;
+}
+
+.typing-input input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  outline: none;
+}
+
+.submit-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+
+header.hide {
+  display: none;
+}
