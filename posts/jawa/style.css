@@ -91,18 +91,23 @@ button{
 /* DRAWER */  
 /* ========================= */  
   
-#bottomDrawer{      
-  position:fixed;      
-  left:0;      
-  right:0;      
-  bottom:0;      
-  background:#fff;      
-  border-radius:18px 18px 0 0;      
-  box-shadow:0 -10px 30px rgba(0,0,0,.15);      
-  transform:translateY(calc(100% - 54px));      
-  transition:.35s ease;      
-  z-index:9999;      
-}      
+#bottomDrawer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 180px;        /* 🔥 INI KUNCI */
+  max-height: 80vh;
+
+  background: #fff;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -10px 30px rgba(0,0,0,.15);
+
+  transform: translateY(calc(100% - 54px));
+  transition: .35s ease;
+  z-index: 9999;
+}
       
 #bottomDrawer.open{      
   transform:translateY(0);      
