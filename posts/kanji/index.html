@@ -16,8 +16,8 @@
 <main id="screen"></main>
 
 <nav>
-  <button onclick="UI.showMenu()">🏠</button>
-  <button onclick="Select.quiz()">🧪</button>
+  <button onclick="Quiz.exit(); UI.showMenu()">🏠 Home</button>
+  <button onclick="Quiz.exit();Select.quiz();">🧪</button>
 </nav>
 
 <!-- DATA -->
@@ -34,5 +34,6 @@
 <script src="js/ui.js"></script>
 <script src="js/select.js"></script>
 <script src="js/quiz.js"></script>
+<script src="js/practice.js"></script>
 </body>
 </html>
