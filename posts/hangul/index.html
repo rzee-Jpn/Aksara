@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Korean Sound Survival</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home" class="screen active fade">
+  <h1>Korean Sound Survival</h1>
+  <p>Dengar · Pilih · Bertahan</p>
+  <button class="primary" id="btnStart">▶ Mulai</button>
+</div>
+
+<!-- WORLD -->
+
+<div id="world" class="screen fade">
+  <h2>Pilih World</h2>
+  <div class="grid">
+    <button id="btnHangeulBasic">Hangeul Basic</button>
+    <button id="btnHangeulVowel">Hangeul vowel</button>
+    <button id="btnHangeulInitial">Hangeul Initial</button>
+    <button id="btnAssimilation">Assimilation</button>
+    <button id="btnBatchimL1">Batchim Level 1</button>
+    <button id="btnBatchimL2">Batchim Level 2</button>
+    <button id="btnBatchimL3">Batchim Level 3</button>
+    <button id="btnBatchimL4">Batchim Level 4</button>
+  </div>
+
+  <button class="primary" id="btnSurvival">🧠 Survival Mode (PRO)</button>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen fade">
+  <div class="top-bar">
+    ❤️ <span id="hp">3</span>
+    🔥 <span id="combo">0</span>
+  </div>
+
+  <button class="audio-btn pulse" id="btnPlayAudio">🔊</button>
+
+  <div id="questionBox" class="question-box">
+    <div id="choices" class="choices"></div>
+  </div>
+
+  <p id="feedback"></p>
+
+  <button class="secondary" id="btnBackToWorld">⬅ Kembali</button>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover" class="screen fade">
+  <div class="gameover-box">
+    <div class="skull">💀</div>
+    <h1>Game Over</h1>
+
+    <div class="summary">
+      <div>
+        <span id="statTotal">0</span>
+        <small>Total Soal</small>
+      </div>
+      <div>
+        <span id="statCorrect">0</span>
+        <small>Benar</small>
+      </div>
+      <div>
+        <span id="statBestCombo">0</span>
+        <small>Best Combo</small>
+      </div>
+    </div>
+
+    <button class="primary" id="btnRevive">❤️ Revive (1x)</button>
+    <button class="secondary" id="btnRetry">🔁 Main Lagi</button>
+    <button class="secondary" id="btnGoWorld">⬅ World</button>
+  </div>
+</div>
+
+<!-- SUBSCRIBE -->
+<div id="subscribe" class="modal">
+  <div class="modal-box">
+    <h2>🔒 Survival Mode</h2>
+    <p>Mode tanpa nyawa, endless challenge.</p>
+    <button class="primary" id="btnFakeSubscribe">💳 Subscribe</button>
+    <button class="secondary" id="btnCloseSubscribe">✖ Tutup</button>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
