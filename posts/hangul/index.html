@@ -16,12 +16,11 @@
 </div>
 
 <!-- WORLD -->
-
 <div id="world" class="screen fade">
   <h2>Pilih World</h2>
   <div class="grid">
     <button id="btnHangeulBasic">Hangeul Basic</button>
-    <button id="btnHangeulVowel">Hangeul vowel</button>
+    <button id="btnHangeulVowel">Hangeul Vowel</button>
     <button id="btnHangeulInitial">Hangeul Initial</button>
     <button id="btnAssimilation">Assimilation</button>
     <button id="btnBatchimL1">Batchim Level 1</button>
@@ -31,6 +30,20 @@
   </div>
 
   <button class="primary" id="btnSurvival">🧠 Survival Mode (PRO)</button>
+</div>
+
+<!-- LESSON (BARU) -->
+<div id="lesson" class="screen fade">
+  <div class="lesson-box">
+    <h2 id="lessonHangul"></h2>
+    <p id="lessonPhonetic" class="phonetic"></p>
+    <p id="lessonRule" class="rule"></p>
+
+    <div class="lesson-actions">
+      <button class="secondary" id="btnLessonAudio">🔊 Dengarkan</button>
+      <button class="primary" id="btnLessonNext">Next →</button>
+    </div>
+  </div>
 </div>
 
 <!-- GAME -->
@@ -88,6 +101,6 @@
   </div>
 </div>
 
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/index.js"></script>
 </body>
 </html>
