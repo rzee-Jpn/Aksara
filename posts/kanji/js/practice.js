@@ -1,5 +1,7 @@
 const Practice = {
-  // ===== HEADER CONTROL (AMAN, TIDAK GANGGU LOGIC) =====
+  canvasAbort: null,
+
+  // ===== HEADER CONTROL =====
   hideHeader() {
     const h = document.querySelector("header");
     if (h) h.classList.add("hide");
@@ -10,24 +12,24 @@ const Practice = {
     if (h) h.classList.remove("hide");
   },
 
+  // ===== MASUK PRACTICE =====
   draw(char) {
-    this.hideHeader(); // ⬅️ HEADER DISMBUNYIKAN SAAT PRACTICE
+    this.hideHeader();
+    this._teardownCanvas(); // aman kalau masuk ulang
 
     UI.screen.innerHTML = `
-      <div class="draw-wrap">
-        <div class="draw-card">
+      <div class="draw-wrap os-practice">
+        <div class="draw-card os-card">
           <div class="draw-head">
-            <span class="jp-char">${char}</span>
-            <span class="hint">Tulis ulang karakter</span>
+            <span class="jp-char os-char">${char}</span>
+            <span class="hint os-hint">Tulis ulang karakter</span>
           </div>
 
           <canvas id="canvas"></canvas>
 
-          <div class="draw-actions">
-            <button onclick="Practice.clear()">🧹 Hapus</button>
-            <button class="primary" onclick="Practice.exit('${char}')">
-              ← Kembali
-            </button>
+          <div class="draw-actions os-actions">
+            <button class="os-btn clear" onclick="Practice.clear()">🧹 Hapus</button>
+            <button class="os-btn back" onclick="Practice.back()">← Kembali</button>
           </div>
         </div>
       </div>
@@ -36,19 +38,25 @@ const Practice = {
     this.initCanvas();
   },
 
-  // ===== KELUAR PRACTICE (WAJIB PAKAI INI) =====
-  exit(char) {
-    this.showHeader(); // ⬅️ HEADER MUNCUL LAGI
-    UI.showChar(char, "");
+  // ===== KEMBALI KE GRID ASAL =====
+  back() {
+    this._teardownCanvas();
+    this.showHeader();
+
+    if (UI.lastGrid) {
+      UI.grid(UI.lastGrid);
+    } else {
+      UI.showMenu();
+    }
   },
 
+  // ===== INIT CANVAS =====
   initCanvas() {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
 
-    // --- FIX scaling & blur ---
     const dpr = window.devicePixelRatio || 1;
-    const size = 300;
+    const size = 320; // lebih besar biar nyaman tulis
 
     canvas.style.width = size + "px";
     canvas.style.height = size + "px";
@@ -65,10 +73,7 @@ const Practice = {
     const pos = e => {
       const r = canvas.getBoundingClientRect();
       const t = e.touches ? e.touches[0] : e;
-      return {
-        x: t.clientX - r.left,
-        y: t.clientY - r.top
-      };
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
     };
 
     const start = e => {
@@ -87,23 +92,38 @@ const Practice = {
       ctx.stroke();
     };
 
-    const end = () => drawing = false;
+    const end = () => {
+      drawing = false;
+      ctx.beginPath();
+    };
 
-    // Touch (Android / iOS)
-    canvas.addEventListener("touchstart", start, { passive: false });
-    canvas.addEventListener("touchmove", move, { passive: false });
-    canvas.addEventListener("touchend", end);
+    // ===== EVENT LISTENER AMAN =====
+    this.canvasAbort = new AbortController();
+    const signal = this.canvasAbort.signal;
 
-    // Mouse (Desktop)
-    canvas.addEventListener("mousedown", start);
-    canvas.addEventListener("mousemove", move);
-    canvas.addEventListener("mouseup", end);
-    canvas.addEventListener("mouseleave", end);
+    canvas.addEventListener("touchstart", start, { passive: false, signal });
+    canvas.addEventListener("touchmove", move, { passive: false, signal });
+    canvas.addEventListener("touchend", end, { signal });
+
+    canvas.addEventListener("mousedown", start, { signal });
+    canvas.addEventListener("mousemove", move, { signal });
+    canvas.addEventListener("mouseup", end, { signal });
+    canvas.addEventListener("mouseleave", end, { signal });
   },
 
+  // ===== CLEAR CANVAS =====
   clear() {
     const canvas = document.getElementById("canvas");
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  },
+
+  // ===== BERSIHKAN EVENT LISTENER =====
+  _teardownCanvas() {
+    if (this.canvasAbort) {
+      this.canvasAbort.abort();
+      this.canvasAbort = null;
+    }
   }
 };
