@@ -1,0 +1,21 @@
+export const INITIAL = [
+  { id:"g", category:"initial", hangul:"ㄱ", tts:"가", options:["ㄱ","ㄷ","ㅂ"], answer:"ㄱ", weight:1, errorCount:0 },
+  { id:"kk", category:"initial", hangul:"ㄲ", tts:"까", options:["ㄲ","ㅋ","ㄱ"], answer:"ㄲ", weight:1, errorCount:0 },
+  { id:"n", category:"initial", hangul:"ㄴ", tts:"나", options:["ㄴ","ㅁ","ㄹ"], answer:"ㄴ", weight:1, errorCount:0 },
+  { id:"d", category:"initial", hangul:"ㄷ", tts:"다", options:["ㄷ","ㅌ","ㄸ"], answer:"ㄷ", weight:1, errorCount:0 },
+  { id:"tt", category:"initial", hangul:"ㄸ", tts:"따", options:["ㄸ","ㄷ","ㅌ"], answer:"ㄸ", weight:1, errorCount:0 },
+  { id:"r", category:"initial", hangul:"ㄹ", tts:"라", options:["ㄹ","ㄴ","ㅁ"], answer:"ㄹ", weight:1, errorCount:0 },
+  { id:"m", category:"initial", hangul:"ㅁ", tts:"마", options:["ㅁ","ㄴ","ㅂ"], answer:"ㅁ", weight:1, errorCount:0 },
+  { id:"b", category:"initial", hangul:"ㅂ", tts:"바", options:["ㅂ","ㅍ","ㅃ"], answer:"ㅂ", weight:1, errorCount:0 },
+  { id:"pp", category:"initial", hangul:"ㅃ", tts:"빠", options:["ㅃ","ㅂ","ㅍ"], answer:"ㅃ", weight:1, errorCount:0 },
+  { id:"s", category:"initial", hangul:"ㅅ", tts:"사", options:["ㅅ","ㅆ","ㅈ"], answer:"ㅅ", weight:1, errorCount:0 },
+  { id:"ss", category:"initial", hangul:"ㅆ", tts:"싸", options:["ㅆ","ㅅ","ㅈ"], answer:"ㅆ", weight:1, errorCount:0 },
+  { id:"ng", category:"initial", hangul:"ㅇ", tts:"아", options:["ㅇ","ㅎ","ㄴ"], answer:"ㅇ", weight:1, errorCount:0 },
+  { id:"j", category:"initial", hangul:"ㅈ", tts:"자", options:["ㅈ","ㅊ","ㅅ"], answer:"ㅈ", weight:1, errorCount:0 },
+  { id:"jj", category:"initial", hangul:"ㅉ", tts:"짜", options:["ㅉ","ㅈ","ㅊ"], answer:"ㅉ", weight:1, errorCount:0 },
+  { id:"ch", category:"initial", hangul:"ㅊ", tts:"차", options:["ㅊ","ㅈ","ㅋ"], answer:"ㅊ", weight:1, errorCount:0 },
+  { id:"k", category:"initial", hangul:"ㅋ", tts:"카", options:["ㅋ","ㄱ","ㅌ"], answer:"ㅋ", weight:1, errorCount:0 },
+  { id:"t", category:"initial", hangul:"ㅌ", tts:"타", options:["ㅌ","ㄷ","ㅋ"], answer:"ㅌ", weight:1, errorCount:0 },
+  { id:"p", category:"initial", hangul:"ㅍ", tts:"파", options:["ㅍ","ㅂ","ㅋ"], answer:"ㅍ", weight:1, errorCount:0 },
+  { id:"h", category:"initial", hangul:"ㅎ", tts:"하", options:["ㅎ","ㅇ","ㅋ"], answer:"ㅎ", weight:1, errorCount:0 }
+];
