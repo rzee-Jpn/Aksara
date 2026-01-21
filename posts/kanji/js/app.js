@@ -4,11 +4,14 @@ const App = {
   },
 
   speak(text) {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "ja-JP";
-    u.rate = 0.85;
-    speechSynthesis.speak(u);
+  if (window.speechSynthesis?.speaking) {
+    speechSynthesis.cancel();
   }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "ja-JP";
+  u.rate = 0.85;
+  speechSynthesis.speak(u);
+}
 };
 
 document.addEventListener("DOMContentLoaded", () => {
