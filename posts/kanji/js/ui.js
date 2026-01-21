@@ -1,6 +1,7 @@
 const UI = {
   screen: document.getElementById("screen"),
-
+  lastGrid: null, // ⬅️ SIMPAN ASAL
+  
   showMenu() {
     this.screen.innerHTML = `
       <div class="menu">
@@ -24,13 +25,28 @@ const UI = {
     `;
   },
 
+
   grid(data) {
+  this.lastGrid = data;
+
+  const isKanji = data[0]?.a; // kanji punya arti (a)
+  const typeClass = isKanji ? "kanji" : "kana";
+
+  const rows = [];
+  for (let i = 0; i < data.length; i += (isKanji ? 4 : 5)) {
+    rows.push(data.slice(i, i + (isKanji ? 4 : 5)));
+  }
+
   this.screen.innerHTML = `
-    <div class="grid">
-      ${data.map(x => `
-        <div class="char" onclick="UI.showChar('${x.c}','${x.r || x.a || ""}')">
-          ${x.c}
-          <small>${x.r || x.a || ""}</small>
+    <div class="gojuon ${typeClass}">
+      ${rows.map(row => `
+        <div class="gojuon-row">
+          ${row.map(x => `
+            <div class="char" onclick="UI.showChar('${x.c}','${x.r || x.a || ""}')">
+              ${x.c}
+              <small>${x.r || x.a || ""}</small>
+            </div>
+          `).join("")}
         </div>
       `).join("")}
     </div>
@@ -54,4 +70,3 @@ showChar(char, reading) {
   `;
 }
 };
-
