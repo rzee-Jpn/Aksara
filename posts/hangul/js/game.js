@@ -6,6 +6,7 @@ let pool = [];
 let queue = [];
 let current = null;
 
+/* game */
 let hp = 3;
 let combo = 0;
 let bestCombo = 0;
@@ -16,6 +17,11 @@ let lastWorld = "hangeul_basic";
 let total = 0;
 let correct = 0;
 let locked = false;
+
+/* lesson */
+let lessonSteps = [];
+let lessonIndex = 0;
+let inLesson = false;
 
 const STORAGE_KEY = "kss_pro";
 const synth = "speechSynthesis" in window ? window.speechSynthesis : null;
@@ -31,6 +37,13 @@ const el = {
   btnGoWorld: $("btnGoWorld"),
   btnPlayAudio: $("btnPlayAudio"),
   btnBackToWorld: $("btnBackToWorld"),
+
+  btnLessonNext: $("btnLessonNext"),
+  btnLessonAudio: $("btnLessonAudio"),
+
+  lessonHangul: $("lessonHangul"),
+  lessonPhonetic: $("lessonPhonetic"),
+  lessonRule: $("lessonRule"),
 
   subscribe: $("subscribe"),
   statTotal: $("statTotal"),
@@ -57,6 +70,39 @@ const showScreen = id => {
   document.querySelectorAll(".screen")
     .forEach(s => s.classList.remove("active"));
   $(id)?.classList.add("active");
+};
+
+/* ================= LESSON ENGINE ================= */
+const startLesson = worldId => {
+  lastWorld = worldId;
+  inLesson = true;
+
+  lessonSteps = CONTENT
+    .filter(WORLDS[worldId].filter)
+    .filter(q => q.rule || q.phonetic || q.heard)
+    .slice(0, 3); // maksimal 3 step
+
+  if (!lessonSteps.length) {
+    startGame(worldId);
+    return;
+  }
+
+  lessonIndex = 0;
+  renderLesson();
+  showScreen("lesson");
+};
+
+const renderLesson = () => {
+  const q = lessonSteps[lessonIndex];
+
+  el.lessonHangul.textContent = q.hangul || "";
+  el.lessonPhonetic.textContent = q.phonetic || q.heard || "";
+  el.lessonRule.textContent = q.rule || "";
+
+  el.btnLessonNext.textContent =
+    lessonIndex === lessonSteps.length - 1
+      ? "Mulai Quiz"
+      : "Next →";
 };
 
 /* ================= GAME CORE ================= */
@@ -98,7 +144,7 @@ const nextQuestion = () => {
 
 /* ================= AUDIO ================= */
 const playSound = () => {
-  if (!current || !synth) return alert("Browser tidak mendukung audio");
+  if (!current || !synth) return;
   synth.cancel();
   const u = new SpeechSynthesisUtterance(current.tts);
   u.lang = "ko-KR";
@@ -113,7 +159,9 @@ const checkAnswer = (choice, btn) => {
   total++;
 
   [...el.choices.children].forEach(b => {
-    b.classList.add(b.textContent === current.answer ? "correct" : "dim");
+    b.classList.add(
+      b.textContent === current.answer ? "correct" : "dim"
+    );
   });
 
   if (choice === current.answer) {
@@ -166,13 +214,34 @@ const showGameOver = () => {
 };
 
 /* ================= VIBRATION ================= */
-const vibrate = p => "vibrate" in navigator && navigator.vibrate(p);
+const vibrate = p =>
+  "vibrate" in navigator && navigator.vibrate(p);
 
 /* ================= EVENTS ================= */
 el.btnStart.onclick = () => showScreen("world");
 el.btnPlayAudio.onclick = playSound;
 el.btnBackToWorld.onclick = () => showScreen("world");
 el.btnGoWorld.onclick = () => showScreen("world");
+
+el.btnLessonNext.onclick = () => {
+  if (lessonIndex < lessonSteps.length - 1) {
+    lessonIndex++;
+    renderLesson();
+  } else {
+    inLesson = false;
+    startGame(lastWorld);
+  }
+};
+
+el.btnLessonAudio.onclick = () => {
+  const q = lessonSteps[lessonIndex];
+  if (!synth || !q.tts) return;
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(q.tts);
+  u.lang = "ko-KR";
+  u.rate = 0.85;
+  synth.speak(u);
+};
 
 el.btnRevive.onclick = () => {
   revived = true;
@@ -199,8 +268,11 @@ el.btnSurvival.onclick = () => {
   ["btnBatchimL2", "batchim_l2"],
   ["btnBatchimL3", "batchim_l3"],
   ["btnBatchimL4", "batchim_l4"],
-].forEach(([id, world]) => $(id).onclick = () => startGame(world));
+].forEach(([id, world]) =>
+  $(id).onclick = () => startLesson(world)
+);
 
+/* SUBSCRIBE */
 $("btnFakeSubscribe").onclick = () => {
   localStorage.setItem(STORAGE_KEY, "1");
   el.subscribe.classList.remove("show");
