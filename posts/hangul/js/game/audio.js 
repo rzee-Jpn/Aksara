@@ -1,0 +1,13 @@
+import { current, synth } from "../core/state.js";
+
+export function playSound() {
+  if (!current || !synth) {
+    alert("Browser tidak mendukung audio.");
+    return;
+  }
+  synth.cancel();
+  const u = new SpeechSynthesisUtterance(current.tts);
+  u.lang = "ko-KR";
+  u.rate = 0.85;
+  synth.speak(u);
+}
