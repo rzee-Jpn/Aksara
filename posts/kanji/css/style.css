@@ -454,3 +454,67 @@ canvas {
   flex-direction: column;
   gap: 24px;
 }
+
+
+
+
+
+
+header {
+  background: linear-gradient(135deg, #0f172a, #020617);
+  border-bottom: 1px solid #1e293b;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+header p {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+nav button {
+  font-size: 1.4rem;
+}
+
+.quiz-options button {
+  font-size: 1.1rem;
+}
+
+.quiz-char {
+  font-size: 4rem;
+}
+
+
+main {
+  padding-bottom: calc(60px + env(safe-area-inset-bottom));
+}
+
+
+nav {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 420px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+
+.card-img {
+  max-width: 140px;
+  margin: 10px auto;
+  display: block;
+}
+
+.example {
+  font-size: 1.2em;
+  margin-top: 6px;
+  color: #444;
+}
+
+
