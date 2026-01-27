@@ -1,72 +1,97 @@
 const UI = {
   screen: document.getElementById("screen"),
-  lastGrid: null, // ⬅️ SIMPAN ASAL
-  
+  lastGrid: null,
+  lastChar: null,
+
   showMenu() {
     this.screen.innerHTML = `
-      <div class="menu">
-        <div class="card" onclick="UI.grid(hiragana)">Hiragana</div>
-        <div class="card" onclick="UI.grid(katakana)">Katakana</div>
-        <div class="card" onclick="UI.kanjiMenu()">Kanji JLPT</div>
-        <div class="card" onclick="Select.quiz()">Quiz</div>
+      <div class="os-menu">
+        <div class="os-card" onclick="UI.grid(hiragana)">あ<br><small>Hiragana</small></div>
+        <div class="os-card" onclick="UI.grid(katakana)">ア<br><small>Katakana</small></div>
+        <div class="os-card" onclick="UI.kanjiMenu()">漢<br><small>Kanji</small></div>
+        <div class="os-card" onclick="Select.quiz()">🎮<br><small>Quiz Mode</small></div>
       </div>
     `;
   },
 
   kanjiMenu() {
     this.screen.innerHTML = `
-      <div class="menu">
-        <div class="card" onclick="UI.grid(N5)">N5</div>
-        <div class="card" onclick="UI.grid(N4)">N4</div>
-        <div class="card" onclick="UI.grid(N3)">N3</div>
-        <div class="card" onclick="UI.grid(N2)">N2</div>
-        <div class="card" onclick="UI.grid(N1)">N1</div>
+      <div class="os-menu">
+        <div class="os-card" onclick="UI.grid(N5)">N5</div>
+        <div class="os-card" onclick="UI.grid(N4)">N4</div>
+        <div class="os-card" onclick="UI.grid(N3)">N3</div>
+        <div class="os-card" onclick="UI.grid(N2)">N2</div>
+        <div class="os-card" onclick="UI.grid(N1)">N1</div>
       </div>
     `;
   },
 
-
   grid(data) {
+  // 🔥 MERGE CONTOH + IMAGE UNTUK HIRAGANA
+  if (window.hiraganaExample) {
+    data.forEach(h => {
+      if (!h.c) return; // skip non-kana
+      const ex = hiraganaExample[h.c];
+      if (ex) {
+        h.example = ex.word;
+        h.image = ex.img;
+      }
+    });
+  }
+
   this.lastGrid = data;
 
-  const isKanji = data[0]?.a; // kanji punya arti (a)
+  const isKanji = !!data[0]?.k;
   const typeClass = isKanji ? "kanji" : "kana";
+  const cols = isKanji ? 4 : 5;
 
   const rows = [];
-  for (let i = 0; i < data.length; i += (isKanji ? 4 : 5)) {
-    rows.push(data.slice(i, i + (isKanji ? 4 : 5)));
+  for (let i = 0; i < data.length; i += cols) {
+    rows.push(data.slice(i, i + cols));
   }
 
   this.screen.innerHTML = `
     <div class="gojuon ${typeClass}">
       ${rows.map(row => `
         <div class="gojuon-row">
-          ${row.map(x => `
-            <div class="char" onclick="UI.showChar('${x.c}','${x.r || x.a || ""}')">
-              ${x.c}
-              <small>${x.r || x.a || ""}</small>
-            </div>
-          `).join("")}
+          ${row.map(x => {
+            const char = x.c || x.k;
+            const reading = x.r || x.a || "";
+            return `
+              <div class="char" onclick="UI.showChar('${char}')">
+                ${char}
+                <small>${reading}</small>
+              </div>
+            `;
+          }).join("")}
         </div>
       `).join("")}
     </div>
   `;
 },
 
+  showChar(char) {
+    const item = this.lastGrid?.find(x => (x.c || x.k) === char);
+    this.lastChar = item;
 
-showChar(char, reading) {
-  this.screen.innerHTML = `
-    <div class="card detail">
-      <div class="big-char">${char}</div>
-      <div class="reading">${reading}</div>
+    this.screen.innerHTML = `
+      <div class="os-practice">
+        <div class="os-card">
+          <div class="os-char">${char}</div>
 
-      <div class="actions">
-        <button onclick="App.speak('${char}')">🔊 Dengarkan</button>
-        <button onclick="Practice.draw('${char}')">✍️ Latihan Tulis</button>
+          ${item?.image ? `<img class="card-img" src="${item.image}" alt="">` : ""}
+
+          <div class="os-hint">
+            ${item?.r || item?.a || ""}
+            ${item?.example ? `<div class="example">${item.example}</div>` : ""}
+          </div>
+
+          <div class="os-actions">
+            <button class="os-btn" onclick="App.speak('${char}')">🔊 Suara</button>
+            <button class="os-btn back" onclick="Practice.draw('${char}')">✍️ Tulis</button>
+          </div>
+        </div>
       </div>
-
-      <button class="back" onclick="UI.showMenu()">← Kembali</button>
-    </div>
-  `;
-}
+    `;
+  }
 };
