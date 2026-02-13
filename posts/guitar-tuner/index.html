@@ -2,255 +2,60 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pro Guitar Tuner</title>
-
+<title>Ultra Accurate Web Tuner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body {
-  background: #020617;
-  color: #e5e7eb;
-  font-family: system-ui, sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
+  background:#0b0f14;
+  color:#eaeaea;
+  font-family:system-ui, sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
-
-h1 {
-  margin: 10px 0 5px;
-  font-size: 24px;
+.tuner {
+  text-align:center;
+  width:300px;
 }
-
 .note {
-  font-size: 64px;
-  font-weight: 800;
+  font-size:64px;
+  font-weight:700;
 }
-
 .freq {
-  opacity: 0.8;
-  margin-bottom: 10px;
+  opacity:.7;
+  margin-bottom:10px;
 }
-
 .meter {
-  width: 100%;
-  max-width: 320px;
-  height: 8px;
-  background: #1e293b;
-  margin: 20px auto;
-  border-radius: 4px;
-  position: relative;
+  position:relative;
+  height:6px;
+  background:#222;
+  border-radius:3px;
 }
-
 .needle {
-  width: 4px;
-  height: 28px;
-  background: #22c55e;
-  position: absolute;
-  top: -10px;
-  left: 50%;
+  position:absolute;
+  top:-7px;
+  width:2px;
+  height:20px;
+  background:#00ff9c;
+  left:50%;
+  transform:translateX(-50%);
 }
-
 .status {
-  font-size: 16px;
-  margin-top: 8px;
-}
-
-.strings {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-  max-width: 360px;
-  margin: 20px auto;
-}
-
-.strings button {
-  padding: 12px 0;
-  font-size: 16px;
-  border-radius: 10px;
-  border: none;
-  background: #1e293b;
-  color: #e5e7eb;
-}
-
-.strings button.active {
-  background: #22c55e;
-  color: #020617;
-  font-weight: 700;
-}
-
-.start {
-  margin-top: 15px;
-  padding: 14px;
-  width: 100%;
-  max-width: 300px;
-  font-size: 16px;
-  border-radius: 12px;
-  border: none;
-  background: #22c55e;
+  margin-top:10px;
+  font-size:14px;
 }
 </style>
 </head>
-
 <body>
 
-<h1>🎸 Pro Guitar Tuner</h1>
-<div class="note" id="note">E2</div>
-<div class="freq" id="freq">82.41 Hz</div>
-
-<div class="meter">
-  <div class="needle" id="needle"></div>
+<div class="tuner">
+  <div class="note">–</div>
+  <div class="freq">0.00 Hz</div>
+  <div class="meter"><div class="needle"></div></div>
+  <div class="status">Allow microphone access</div>
 </div>
 
-<div class="status" id="status">Pilih senar & petik</div>
-
-<div class="strings">
-  <button onclick="selectString(0)" class="active">E</button>
-  <button onclick="selectString(1)">A</button>
-  <button onclick="selectString(2)">D</button>
-  <button onclick="selectString(3)">G</button>
-  <button onclick="selectString(4)">B</button>
-  <button onclick="selectString(5)">E</button>
-</div>
-
-<button class="start" onclick="start()">Start</button>
-
-<script>
-let ctx, analyser, buffer;
-let freqHistory = [];
-let currentString = 0;
-let lastPluck = 0;
-
-const STRINGS = [
-  { note: "E2", freq: 82.41, band: 120 },
-  { note: "A2", freq: 110.00, band: 160 },
-  { note: "D3", freq: 146.83, band: 220 },
-  { note: "G3", freq: 196.00, band: 300 },
-  { note: "B3", freq: 246.94, band: 380 },
-  { note: "E4", freq: 329.63, band: 480 }
-];
-
-let bandpass;
-
-function selectString(i) {
-  currentString = i;
-  freqHistory = [];
-  lastPluck = performance.now();
-
-  document.querySelectorAll(".strings button")
-    .forEach((b, idx) => b.classList.toggle("active", idx === i));
-
-  document.getElementById("note").textContent = STRINGS[i].note;
-  document.getElementById("freq").textContent = STRINGS[i].freq + " Hz";
-
-  if (bandpass) bandpass.frequency.value = STRINGS[i].band;
-}
-
-async function start() {
-  ctx = new AudioContext();
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const source = ctx.createMediaStreamSource(stream);
-
-  bandpass = ctx.createBiquadFilter();
-  bandpass.type = "bandpass";
-  bandpass.frequency.value = STRINGS[currentString].band;
-  bandpass.Q.value = 0.8;
-
-  analyser = ctx.createAnalyser();
-  analyser.fftSize = 8192;
-
-  source.connect(bandpass);
-  bandpass.connect(analyser);
-
-  buffer = new Float32Array(analyser.fftSize);
-  lastPluck = performance.now();
-
-  detect();
-}
-
-function detect() {
-  analyser.getFloatTimeDomainData(buffer);
-
-  if (performance.now() - lastPluck < 200) {
-    requestAnimationFrame(detect);
-    return;
-  }
-
-  let freq = autoCorrelate(buffer, ctx.sampleRate);
-  if (freq === -1) {
-    requestAnimationFrame(detect);
-    return;
-  }
-
-  freqHistory.push(freq);
-  if (freqHistory.length > 8) freqHistory.shift();
-
-  let weighted = 0, total = 0;
-  freqHistory.forEach((f, i) => {
-    const w = i + 1;
-    weighted += f * w;
-    total += w;
-  });
-  freq = weighted / total;
-
-  const target = STRINGS[currentString];
-  const cents = 1200 * Math.log2(freq / target.freq);
-
-  updateUI(freq, cents);
-  requestAnimationFrame(detect);
-}
-
-function autoCorrelate(buf, sampleRate) {
-  let size = buf.length;
-  let rms = 0;
-
-  for (let i = 0; i < size; i++) rms += buf[i] ** 2;
-  rms = Math.sqrt(rms / size);
-  if (rms < 0.01) return -1;
-
-  let c = new Float32Array(size);
-  for (let i = 0; i < size; i++)
-    for (let j = 0; j < size - i; j++)
-      c[i] += buf[j] * buf[j + i];
-
-  let d = 0;
-  while (c[d] > c[d + 1]) d++;
-
-  let max = -1, pos = -1;
-  for (let i = d; i < size; i++) {
-    if (c[i] > max) {
-      max = c[i];
-      pos = i;
-    }
-  }
-
-  if (max < 0.15) return -1;
-
-  let x1 = c[pos - 1], x2 = c[pos], x3 = c[pos + 1];
-  let shift = (x3 - x1) / (2 * (2 * x2 - x1 - x3));
-
-  return sampleRate / (pos + shift);
-}
-
-function updateUI(freq, cents) {
-  document.getElementById("freq").textContent = freq.toFixed(2) + " Hz";
-
-  const needle = document.getElementById("needle");
-  const status = document.getElementById("status");
-
-  let clamped = Math.max(-50, Math.min(50, cents));
-  needle.style.transform = `translateX(${clamped * 2}px)`;
-
-  if (Math.abs(cents) < 0.5) {
-    needle.style.background = "#22c55e";
-    status.textContent = "✔ PAS (±0.5 cent)";
-  } else if (cents < 0) {
-    needle.style.background = "#facc15";
-    status.textContent = "⬇ Terlalu Rendah";
-  } else {
-    needle.style.background = "#facc15";
-    status.textContent = "⬆ Terlalu Tinggi";
-  }
-}
-</script>
-
+<script src="tuner.js"></script>
 </body>
 </html>
