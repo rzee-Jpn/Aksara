@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#09090B" id="meta-theme">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TTS Silang">
+  <link rel="manifest" href="manifest.json">
+  <title>TTS Silang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+<div id="combo-display"></div>
+<div id="loading-overlay"><div class="spinner"></div><div class="loading-label">Memuat…</div></div>
+
+<!-- Mobile keyboard input -->
+<input id="mobile-input" type="text" inputmode="text"
+  autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+  style="position:fixed;opacity:0;width:1px;height:1px;top:50%;left:50%;
+         border:none;outline:none;pointer-events:none;z-index:-1;transform:translate(-50%,-50%);"
+  aria-hidden="true">
+
+<!-- ══════════════════════════════════════
+     SCREEN 1: HOME
+     ══════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-header">
+    <button class="icon-btn" id="home-theme-btn" aria-label="Tema">🌙</button>
+    <div class="home-logo">
+      <div class="home-logo-icon">
+        <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+          <rect x="4"  y="4"  width="10" height="10" rx="2" fill="#F5C842"/>
+          <rect x="19" y="4"  width="10" height="10" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="34" y="4"  width="10" height="10" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="4"  y="19" width="10" height="10" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="19" y="19" width="10" height="10" rx="2" fill="#007AFF"/>
+          <rect x="34" y="19" width="10" height="10" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="4"  y="34" width="10" height="10" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="19" y="34" width="10" height="10" rx="2" fill="rgba(255,255,255,0.2)"/>
+          <rect x="34" y="34" width="10" height="10" rx="2" fill="#30D158"/>
+        </svg>
+      </div>
+      <span class="home-logo-name">TTS Silang</span>
+    </div>
+    <div style="width:40px"></div><!-- spacer -->
+  </div>
+
+  <!-- Daily Card -->
+  <div class="daily-card" id="daily-card">
+    <div class="daily-badge">📅 DAILY PUZZLE</div>
+    <div class="daily-title" id="daily-title">—</div>
+    <div class="daily-meta" id="daily-meta">—</div>
+    <div class="daily-status" id="daily-status"></div>
+    <button class="daily-btn" id="btn-daily">Main Sekarang →</button>
+  </div>
+
+  <!-- World Map -->
+  <div class="section-label">🗺 Story Mode</div>
+  <div class="world-list" id="world-list">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2: LEVEL SELECT
+     ══════════════════════════════════════ -->
+<div id="screen-levels" class="screen">
+  <div class="nav-header">
+    <button class="icon-btn" onclick="App.goHome()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="nav-title" id="world-title-nav">—</div>
+    <div style="width:40px"></div>
+  </div>
+  <div class="level-grid" id="level-grid">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3: GAME
+     ══════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+  <div id="app">
+    <header class="game-header">
+      <button class="header-back" id="btn-back-game" aria-label="Kembali">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M9 11L5 7l4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <div class="header-title">
+        <div class="header-puzzle-name" id="header-puzzle-name">—</div>
+        <div class="header-mode-badge"  id="header-mode-badge"></div>
+      </div>
+      <div class="header-right">
+        <button class="header-theme-btn" id="game-theme-btn" aria-label="Tema">🌙</button>
+        <div class="header-stats">
+          <div id="timer-wrap" class="stat-pill">
+            <span class="stat-pill-lbl">Waktu</span>
+            <span class="stat-pill-val" id="timer-value">00:00</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-lbl">Skor</span>
+            <span class="stat-pill-val" id="score-value">0</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-lbl">Kata</span>
+            <span class="stat-pill-val" id="progress-text">0/0</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="progress-strip">
+      <div class="progress-strip-fill" id="progress-bar-fill"></div>
+    </div>
+
+    <div class="game-body">
+      <div class="grid-area" id="grid-area">
+        <div id="grid-container" tabindex="0" role="application" aria-label="Papan TTS"></div>
+      </div>
+
+      <!-- Zoom — fixed to game-body corner -->
+      <div class="zoom-controls" id="zoom-controls">
+        <button class="zoom-btn" id="btn-zoom-in"  aria-label="Perbesar">＋</button>
+        <button class="zoom-btn" id="btn-zoom-out" aria-label="Perkecil">－</button>
+        <button class="zoom-btn" id="btn-zoom-fit" title="Fit" style="font-size:13px">⊡</button>
+      </div>
+
+      <aside class="clue-panel">
+        <div class="clue-tabs">
+          <div class="clue-tab active" data-tab="across">↔ Mendatar</div>
+          <div class="clue-tab"        data-tab="down">↕ Menurun</div>
+        </div>
+        <div class="clue-pane active" id="clues-across"></div>
+        <div class="clue-pane"        id="clues-down"></div>
+      </aside>
+    </div>
+
+    <footer class="game-footer">
+      <button class="ctrl-btn" id="btn-hint" onclick="game.useHint()">
+        💡 <span class="hint-badge" id="hint-count">5</span>
+      </button>
+      <button class="ctrl-btn" onclick="game.revealCurrentWord()">🔓 Buka Kata</button>
+      <button class="ctrl-btn primary" onclick="game.checkAll()">✅ Cek</button>
+      <button class="ctrl-btn primary" onclick="game.moveToNextWord()">⏭ Lanjut</button>
+    </footer>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     WIN OVERLAY
+     ══════════════════════════════════════ -->
+<div id="win-overlay" class="overlay win-overlay">
+  <div class="overlay-sheet">
+    <div class="overlay-glow"></div>
+    <span class="overlay-emoji" id="win-emoji">🏆</span>
+    <div class="overlay-title" id="win-title">Selesai!</div>
+    <div class="overlay-sub" id="win-sub">Luar biasa!</div>
+    <div class="overlay-stats">
+      <div class="overlay-stat">
+        <span class="overlay-stat-lbl">Skor</span>
+        <span class="overlay-stat-val" id="win-score" style="color:var(--c-gold)">0</span>
+      </div>
+      <div class="overlay-stat">
+        <span class="overlay-stat-lbl">Waktu</span>
+        <span class="overlay-stat-val" id="win-time">0m 0s</span>
+      </div>
+      <div class="overlay-stat">
+        <span class="overlay-stat-lbl">Kata Benar</span>
+        <span class="overlay-stat-val" id="win-words">0</span>
+      </div>
+    </div>
+    <!-- Stars -->
+    <div class="star-row" id="star-row">⭐⭐⭐</div>
+    <div class="overlay-btns">
+      <button class="overlay-btn secondary" id="win-btn-back" onclick="App.backFromGame()">Kembali</button>
+      <button class="overlay-btn primary"   id="win-btn-next" onclick="App.nextLevel()">Level Berikut →</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover-overlay" class="overlay lose-overlay">
+  <div class="overlay-sheet">
+    <div class="overlay-glow"></div>
+    <span class="overlay-emoji">⏰</span>
+    <div class="overlay-title">Waktu Habis!</div>
+    <div class="overlay-sub">Coba lagi!</div>
+    <div class="overlay-stats">
+      <div class="overlay-stat">
+        <span class="overlay-stat-lbl">Skor</span>
+        <span class="overlay-stat-val" id="gameover-score" style="color:var(--c-red)">0</span>
+      </div>
+    </div>
+    <div class="overlay-btns">
+      <button class="overlay-btn secondary" onclick="App.backFromGame()">Kembali</button>
+      <button class="overlay-btn primary"   onclick="App.replayLevel()">Coba Lagi</button>
+    </div>
+  </div>
+</div>
+
+<script src="ui.js"></script>
+<script src="game.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

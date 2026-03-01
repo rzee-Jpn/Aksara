@@ -1,0 +1,69 @@
+name: 🌍 Full Story Build
+
+on:
+  # Manual saja — untuk generate semua world sekaligus
+  workflow_dispatch:
+    inputs:
+      world:
+        description: 'World ID (w1/w2/w3/w4, kosong = semua)'
+        required: false
+        default: ''
+      levels:
+        description: 'Level per world'
+        required: false
+        default: '5'
+      dry_run:
+        description: 'Dry run?'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm init -y && npm install openai @anthropic-ai/sdk
+
+      - name: 🌍 Generate Story Levels
+        env:
+          DEFAULT_PROVIDER:  ${{ vars.DEFAULT_PROVIDER || 'anthropic' }}
+          DEFAULT_API_KEY:   ${{ secrets.DEFAULT_API_KEY }}
+          WORLD_W1_PROVIDER: ${{ vars.WORLD_W1_PROVIDER }}
+          WORLD_W1_API_KEY:  ${{ secrets.WORLD_W1_API_KEY }}
+          WORLD_W2_PROVIDER: ${{ vars.WORLD_W2_PROVIDER }}
+          WORLD_W2_API_KEY:  ${{ secrets.WORLD_W2_API_KEY }}
+          WORLD_W3_PROVIDER: ${{ vars.WORLD_W3_PROVIDER }}
+          WORLD_W3_API_KEY:  ${{ secrets.WORLD_W3_API_KEY }}
+          WORLD_W4_PROVIDER: ${{ vars.WORLD_W4_PROVIDER }}
+          WORLD_W4_API_KEY:  ${{ secrets.WORLD_W4_API_KEY }}
+          DAILY_PROVIDER:    ${{ vars.DAILY_PROVIDER || vars.DEFAULT_PROVIDER }}
+          DAILY_API_KEY:     ${{ secrets.DAILY_API_KEY || secrets.DEFAULT_API_KEY }}
+        run: |
+          WORLD="${{ github.event.inputs.world }}"
+          LEVELS="${{ github.event.inputs.levels || '5' }}"
+          DRY="${{ github.event.inputs.dry_run || 'false' }}"
+
+          CMD="node generate-ai.js --levels $LEVELS --days 7"
+          [ -n "$WORLD" ] && CMD="$CMD --world $WORLD"
+          [ "$DRY" = "true" ] && CMD="$CMD --dry-run"
+
+          echo "Running: $CMD"
+          $CMD
+
+      - name: 💾 Commit & Push
+        run: |
+          git config user.name  "TTS Bot 🤖"
+          git config user.email "bot@tts-silang.app"
+          git add data/
+          git diff --staged --quiet || git commit -m "🌍 Story build $(date +%Y-%m-%d)" && git push

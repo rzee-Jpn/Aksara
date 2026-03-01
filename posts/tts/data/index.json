@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "worlds": [
+    {
+      "id": "w1",
+      "slug": "pengetahuan-umum",
+      "title": "Pengetahuan Umum",
+      "emoji": "🌍",
+      "color": "#007AFF",
+      "file": "data/worlds/pengetahuan-umum.json",
+      "levelCount": 2
+    },
+    {
+      "id": "w2",
+      "slug": "sains-teknologi",
+      "title": "Sains & Teknologi",
+      "emoji": "🔬",
+      "color": "#30D158",
+      "file": "data/worlds/sains-teknologi.json",
+      "levelCount": 1
+    },
+    {
+      "id": "w3",
+      "slug": "budaya-indonesia",
+      "title": "Budaya Indonesia",
+      "emoji": "🏯",
+      "color": "#FF9500",
+      "file": "data/worlds/budaya-indonesia.json",
+      "levelCount": 1
+    },
+    {
+      "id": "w4",
+      "slug": "hiburan",
+      "title": "Hiburan",
+      "emoji": "🎬",
+      "color": "#BF5AF2",
+      "file": "data/worlds/hiburan.json",
+      "levelCount": 1
+    }
+  ],
+  "daily": [
+    "2026-03-01",
+    "2026-03-02"
+  ]
+}
