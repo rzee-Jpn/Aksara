@@ -38,17 +38,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          # Tidak ada cache: 'npm' — package-lock.json dibuat on-the-fly,
+          # cache tidak bisa bekerja tanpa lock file yang di-commit.
 
       - name: 📦 Install dependencies
         run: |
-          # Install SDK yang tersedia dari secrets
           npm init -y
-          if [ -n "${{ secrets.DEFAULT_API_KEY || secrets.DAILY_API_KEY }}" ]; then
-            npm install openai @anthropic-ai/sdk
-          else
-            echo "⚠️  Tidak ada API key — dry run mode"
-          fi
+          npm install openai @anthropic-ai/sdk
+          # openai  → dipakai untuk OpenAI & Groq (baseURL override)
+          # @anthropic-ai/sdk → dipakai untuk Claude
 
       - name: 🎯 Generate Daily Puzzle
         env:
@@ -86,7 +84,7 @@ jobs:
           fi
 
           # Kalau dry run
-          if [ "$DRY" = "true" ] || [ -z "$DEFAULT_API_KEY" ]; then
+          if [ "$DRY" = "true" ] || { [ -z "$DEFAULT_API_KEY" ] && [ -z "$DAILY_API_KEY" ]; }; then
             CMD="$CMD --dry-run"
           fi
 
