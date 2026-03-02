@@ -61,11 +61,20 @@
     const outCls = dir === 'forward' ? 'slide-out' : 'slide-back-out';
     const inCls  = dir === 'forward' ? 'slide-in'  : 'slide-back-in';
 
+    // FIX: Paksa display flex selama animasi slide-out, lalu benar-benar sembunyikan
+    // Tanpa ini, inline style 'display:flex' yang tersisa dari kunjungan sebelumnya
+    // akan override CSS display:none sehingga screen lama muncul kembali setelah animasi.
+    cur.style.display = 'flex';
     cur.classList.remove('active');
     cur.classList.add(outCls);
-    setTimeout(() => cur.classList.remove(outCls), 340);
+    setTimeout(() => {
+      cur.classList.remove(outCls);
+      cur.style.display = ''; // Hapus inline style → CSS display:none berlaku
+    }, 340);
 
-    next.style.display = 'flex';
+    // FIX: Gunakan class .active saja, BUKAN inline style.
+    // Inline style 'display:flex' akan persist ke sesi navigasi berikutnya.
+    next.style.display = ''; // Pastikan tidak ada inline style sisa
     next.classList.add('active', inCls);
     setTimeout(() => next.classList.remove(inCls), 360);
 
@@ -309,8 +318,8 @@
     document.getElementById('win-overlay').style.display      = 'none';
     document.getElementById('gameover-overlay').style.display = 'none';
 
-    // Stop timer
-    if (window.game?.timer) clearInterval(window.game.timer);
+    // Stop timer (null supaya _setupMode tidak clearInterval ID yang sudah stale)
+    if (window.game?.timer) { clearInterval(window.game.timer); window.game.timer = null; }
 
     if (isDaily || !currentWorld) {
       buildHome();
