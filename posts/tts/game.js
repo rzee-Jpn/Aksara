@@ -68,6 +68,7 @@ class CrosswordGame {
     this.hintsLeft  = mode === 'hint' ? 3 : 5;
     this.wordsOk    = new Set();
     this.done       = false;
+    this.timer      = null; // FIX: reset timer ref agar _setupMode tidak clearInterval stale ID
 
     const { width, height, layout, clues } = puzzleData;
     this.width  = width;
